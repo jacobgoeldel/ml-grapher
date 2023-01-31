@@ -15,18 +15,18 @@ function TextNode(data: TextProp) {
   }, []);
 
   return (
-      <Box borderRadius='sm' bg='gray.700' overflow='hidden'>
+      <Box borderRadius='sm' bg='#25293b' borderWidth={1} borderColor='gray.900' shadow='md' overflow='hidden'>
         <Box
           p='1'
           pl='4'
           bg='red.700'
           color='gray.50'
           fontWeight='semibold'
-          as='h4'
+          as='h2'
           lineHeight='tight'
           noOfLines={1}
         >
-          Text
+          Deep Layer
         </Box>
       
         <Box p={2}>
