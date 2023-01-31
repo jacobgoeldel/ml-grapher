@@ -5,21 +5,16 @@ import TextNode from './nodes/text-node';
 
 const initialNodes: Node<any>[] = [
     {
-        id: '1',
-        position: { x: 0, y: 0 },
-        data: { label: 'Hello' },
-        type: 'input',
-    },
-    {
-        id: '2',
+        id: '0',
         position: { x: 100, y: 100 },
         data: {  },
         type: 'textNode'
     },
     {
-        id: '3',
-        position: { x: 500, y: 100 },
-        data: { label: 'There' },
+        id: '1',
+        position: { x: 400, y: 100 },
+        data: {  },
+        type: 'textNode'
     },
 ];
 
