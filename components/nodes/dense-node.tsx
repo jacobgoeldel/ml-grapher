@@ -9,7 +9,7 @@ type TextProp = {
   text: string;
 };
 
-function TextNode(data: TextProp) {
+function DenseNode(data: TextProp) {
   const onChange = useCallback((evt: any) => {
     console.log(evt.target.value);
   }, []);
@@ -19,14 +19,14 @@ function TextNode(data: TextProp) {
         <Box
           p='1'
           pl='4'
-          bg='red.700'
+          bg='red.500'
           color='gray.50'
           fontWeight='semibold'
           as='h2'
           lineHeight='tight'
           noOfLines={1}
         >
-          Deep Layer
+          Dense Layer
         </Box>
       
         <Box p={2}>
@@ -38,4 +38,4 @@ function TextNode(data: TextProp) {
   );
 }
 
-export default TextNode;
+export default DenseNode;
