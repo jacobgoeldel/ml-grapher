@@ -4,44 +4,25 @@ import ReactFlow, { Controls, Background, Node, Edge, applyNodeChanges, applyEdg
 import 'reactflow/dist/style.css';
 import DenseNode from './nodes/dense-node';
 import SideBar from './sidebar';
+import useGraph, { GraphState } from './store';
 
-const initialNodes: Node<any>[] = [
-    {
-        id: '0',
-        position: { x: 100, y: 100 },
-        data: {},
-        type: 'denseNode'
-    },
-    {
-        id: '1',
-        position: { x: 400, y: 100 },
-        data: {},
-        type: 'denseNode'
-    },
-];
-
-const initialEdges: Edge<any>[] = [];
 
 const nodeTypes: any = { denseNode: DenseNode };
+
+const selector = (state: GraphState) => ({
+    nodes: state.nodes,
+    edges: state.edges,
+    onNodesChange: state.onNodesChange,
+    onEdgesChange: state.onEdgesChange,
+    onConnect: state.onConnect,
+    createNode: state.createNode,
+  });
 
 const Graph = () => {
     const reactFlowInstance = useReactFlow();
     const reactFlowWrapper = useRef<any | null>(null);
 
-    const [nodes, setNodes] = useState(initialNodes);
-    const [edges, setEdges] = useState(initialEdges);
-
-    const onNodesChange = useCallback(
-        (changes: any) => setNodes((nds) => applyNodeChanges(changes, nds)),
-        []
-    );
-
-    const onEdgesChange = useCallback(
-        (changes: any) => setEdges((eds) => applyEdgeChanges(changes, eds)),
-        []
-    );
-
-    const onConnect = useCallback((params: any) => setEdges((eds) => addEdge(params, eds.filter(e => e.target != params.target))), []);
+    const { nodes, edges, onNodesChange, onEdgesChange, onConnect, createNode } = useGraph(selector);
 
     let id = 0;
     const getId = () => `dndnode_${id++}`;
@@ -75,7 +56,7 @@ const Graph = () => {
                 data: { label: `${type} node` },
             };
 
-            setNodes((nds) => nds.concat(newNode));
+            createNode(newNode);
         },
         [reactFlowInstance]
     );
