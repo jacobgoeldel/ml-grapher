@@ -57,6 +57,7 @@ const Graph = () => {
                 type,
                 position,
                 data: { label: `${type} node` },
+                dragHandle: '.custom-drag-handle',
             };
 
             createNode(newNode);
