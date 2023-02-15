@@ -68,7 +68,7 @@ const useGraph = create<GraphState>((set, get) => ({
     deleteNode: (id: string) => {
         set({
             nodes: get().nodes.filter(n => n.id != id),
-            edges: get().edges.filter(e => e.sourceHandle == id || e.targetHandle == id)
+            edges: get().edges.filter(e => e.sourceHandle != id || e.targetHandle != id)
         });
     },
 }));
