@@ -1,4 +1,4 @@
-import { addEdge, applyEdgeChanges, applyNodeChanges, Connection, Edge, EdgeChange, Node, NodeChange, OnConnect, OnEdgesChange, OnNodesChange } from "reactflow";
+import { addEdge, applyEdgeChanges, applyNodeChanges, Connection, Edge, EdgeChange, Node, NodeChange, OnConnect, OnEdgesChange, OnNodesChange, updateEdge } from "reactflow";
 import { create } from "zustand";
 
 const initialNodes: Node<any>[] = [
@@ -26,6 +26,8 @@ export type GraphState = {
     onNodesChange: OnNodesChange;
     onEdgesChange: OnEdgesChange;
     onConnect: OnConnect;
+    updateEdge: (oldEdge: Edge, newConnection: Connection) => void;
+    deleteEdge: (edge: Edge) => void;
     createNode: (node: Node) => void;
     deleteNode: (id: string) => void;
 };
@@ -48,6 +50,16 @@ const useGraph = create<GraphState>((set, get) => ({
             edges: addEdge(connection, get().edges),
         });
     },
+    updateEdge: (oldEdge: Edge, newConnection: Connection) => {
+        set({
+            edges: updateEdge(oldEdge, newConnection, get().edges)
+        });
+    },
+    deleteEdge: (edge: Edge) => {
+        set({
+            edges: get().edges.filter((e) => e.id !== edge.id)
+        })
+    },
     createNode: (node: Node) => {
         set({
             nodes: get().nodes.concat(node),
@@ -58,7 +70,7 @@ const useGraph = create<GraphState>((set, get) => ({
             nodes: get().nodes.filter(n => n.id != id),
             edges: get().edges.filter(e => e.sourceHandle == id || e.targetHandle == id)
         });
-    }
+    },
 }));
 
 export default useGraph;
