@@ -16,13 +16,16 @@ const selector = (state: GraphState) => ({
     onEdgesChange: state.onEdgesChange,
     onConnect: state.onConnect,
     createNode: state.createNode,
-  });
+    deleteEdge: state.deleteEdge,
+    updateEdge: state.updateEdge,
+});
 
 const Graph = () => {
     const reactFlowInstance = useReactFlow();
     const reactFlowWrapper = useRef<any | null>(null);
 
-    const { nodes, edges, onNodesChange, onEdgesChange, onConnect, createNode } = useGraph(selector);
+    const edgeUpdateSuccessful = useRef(true);
+    const { nodes, edges, onNodesChange, onEdgesChange, onConnect, createNode, deleteEdge, updateEdge } = useGraph(selector);
 
     let id = 0;
     const getId = () => `dndnode_${id++}`;
@@ -54,6 +57,7 @@ const Graph = () => {
                 type,
                 position,
                 data: { label: `${type} node` },
+                dragHandle: '.custom-drag-handle',
             };
 
             createNode(newNode);
@@ -61,14 +65,34 @@ const Graph = () => {
         [reactFlowInstance]
     );
 
+    const onEdgeUpdateStart = useCallback(() => {
+        edgeUpdateSuccessful.current = false;
+    }, []);
+
+    const onEdgeUpdate = useCallback((oldEdge: Edge, newConnection: Edge) => {
+        edgeUpdateSuccessful.current = true;
+        updateEdge(oldEdge, newConnection);
+    }, []);
+
+    const onEdgeUpdateEnd = useCallback((_: Edge, edge: Edge) => {
+        if (!edgeUpdateSuccessful.current) {
+            deleteEdge(edge);
+        }
+
+        edgeUpdateSuccessful.current = true;
+    }, []);
+
     return (
         <Flex grow={1} w="full" h="full">
             <div ref={reactFlowWrapper} style={{ flexGrow: 1, height: "100%" }}>
                 <ReactFlow
                     nodes={nodes}
-                    onNodesChange={onNodesChange}
                     edges={edges}
+                    onNodesChange={onNodesChange}
                     onEdgesChange={onEdgesChange}
+                    onEdgeUpdateStart={onEdgeUpdateStart}
+                    onEdgeUpdate={onEdgeUpdate}
+                    onEdgeUpdateEnd={onEdgeUpdateEnd}
                     onConnect={onConnect}
                     nodeTypes={nodeTypes}
                     onDrop={onDrop}

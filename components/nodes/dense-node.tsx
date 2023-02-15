@@ -1,11 +1,11 @@
 import { useCallback } from 'react';
 import { Handle, Node, Position } from 'reactflow';
-import { Box, HStack, IconButton, Text } from '@chakra-ui/react';
+import { Box, DarkMode, FormControl, FormLabel, HStack, IconButton, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Select, Text, useColorMode } from '@chakra-ui/react';
 import { Input } from '@chakra-ui/react'
 import { CloseIcon } from '@chakra-ui/icons';
 import useGraph from '../store';
 
-const handleStyle = { left: 10 };
+const handleStyle = { width: 10, height: 10, top: "47%" };
 
 type TextProp = {
   text: string;
@@ -13,7 +13,7 @@ type TextProp = {
 
 function DenseNode(node: Node, data: TextProp) {
   const deleteNode = useGraph((state) => state.deleteNode);
-  
+
   const onChange = useCallback((evt: any) => {
     console.log(evt.target.value);
   }, []);
@@ -45,10 +45,31 @@ function DenseNode(node: Node, data: TextProp) {
       </HStack>
 
       <Box p={2}>
-        <Input placeholder='Basic usage' borderRadius="sm" value={data.text} onChange={onChange} />
+      <Handle type="target" position={Position.Left} style={handleStyle} />
+        <Handle type="source" position={Position.Right} style={handleStyle} />
+
+        <FormControl>
+          <FormLabel color="white">Neurons</FormLabel>
+          <NumberInput max={64} min={2} defaultValue={8} color="white">
+            <NumberInputField backgroundColor="gray.800" />
+            <NumberInputStepper>
+              <NumberIncrementStepper />
+              <NumberDecrementStepper />
+            </NumberInputStepper>
+          </NumberInput>
+        </FormControl>
+
+        <FormControl mt={4} mb={2}>
+          <FormLabel color="white">Activation Function</FormLabel>
+          <Select defaultValue="ReLU" color="white" backgroundColor="gray.800">
+            <option>ReLU</option>
+            <option>Tanh</option>
+            <option>Linear</option>
+            <option>Sigmoid</option>
+          </Select>
+        </FormControl>
       </Box>
 
-      <Handle type="source" position={Position.Right} />
     </Box>
   );
 }
