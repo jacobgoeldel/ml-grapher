@@ -3,14 +3,14 @@ import { create } from "zustand";
 
 const initialNodes: Node<any>[] = [
     {
-        id: '0',
+        id: 'preset0',
         position: { x: 100, y: 100 },
         data: {},
         dragHandle: '.custom-drag-handle',
         type: 'denseNode'
     },
     {
-        id: '1',
+        id: 'preset1',
         position: { x: 400, y: 100 },
         data: {},
         dragHandle: '.custom-drag-handle',
@@ -56,6 +56,7 @@ const useGraph = create<GraphState>((set, get) => ({
     deleteNode: (id: string) => {
         set({
             nodes: get().nodes.filter(n => n.id != id),
+            edges: get().edges.filter(e => e.sourceHandle == id || e.targetHandle == id)
         });
     }
 }));
