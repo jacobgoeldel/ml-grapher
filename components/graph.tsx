@@ -3,11 +3,12 @@ import { MutableRefObject, RefObject, useCallback, useRef, useState } from 'reac
 import ReactFlow, { Controls, Background, Node, Edge, applyNodeChanges, applyEdgeChanges, addEdge, ReactFlowInstance, ReactFlowProvider, useReactFlow, Connection } from 'reactflow';
 import 'reactflow/dist/style.css';
 import DenseNode from './nodes/dense-node';
+import InputNode from './nodes/input-node';
 import SideBar from './sidebar';
 import useGraph, { GraphState } from './store';
 
 
-const nodeTypes: any = { denseNode: DenseNode };
+const nodeTypes: any = { denseNode: DenseNode, inputNode: InputNode };
 
 const selector = (state: GraphState) => ({
     nodes: state.nodes,

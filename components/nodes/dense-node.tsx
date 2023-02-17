@@ -2,7 +2,7 @@ import { Handle, Node, Position } from 'reactflow';
 import { FormControl, FormLabel, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Select } from '@chakra-ui/react';
 import DefaultNode from './base-node';
 
-const handleStyle = { width: 10, height: 10, top: "47%" };
+const handleStyle = { width: 12, height: 12, top: "47%" };
 
 type TextProp = {
   text: string;
@@ -10,7 +10,7 @@ type TextProp = {
 
 const DenseNode = (node: Node, data: TextProp) => {
   return (
-    <DefaultNode node={node} data={data} titleColor="red.500">
+    <DefaultNode node={node} data={data} title="Dense Layer" titleColor="red.500">
       <Handle type="target" position={Position.Left} style={handleStyle} />
       <Handle type="source" position={Position.Right} style={handleStyle} />
 

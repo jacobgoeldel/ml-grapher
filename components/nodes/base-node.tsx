@@ -4,13 +4,11 @@ import { Box, HStack, IconButton, Text } from '@chakra-ui/react';
 import { CloseIcon } from '@chakra-ui/icons';
 import useGraph from '../store';
 
-const handleStyle = { width: 10, height: 10, top: "47%" };
-
 type TextProp = {
     text: string;
 };
 
-const DefaultNode: FC<{ node: Node, data: TextProp, titleColor: string, children: JSX.Element | JSX.Element[] }> = ({ node, titleColor, data, children }) => {
+const DefaultNode: FC<{ node: Node, data: TextProp, title: string, titleColor: string, children: JSX.Element | JSX.Element[] }> = ({ node, title, titleColor, data, children }) => {
     const deleteNode = useGraph((state) => state.deleteNode);
     const onDeleteIcon = () => deleteNode(node.id);
 
@@ -28,7 +26,7 @@ const DefaultNode: FC<{ node: Node, data: TextProp, titleColor: string, children
                 className="custom-drag-handle"
                 cursor="move"
             >
-                <Text fontWeight="semibold">Dense Layer</Text>
+                <Text fontWeight="semibold">{title}</Text>
                 <IconButton
                     variant="unstyled"
                     aria-label='delete node'
