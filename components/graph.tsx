@@ -2,6 +2,7 @@ import { Flex, HStack } from '@chakra-ui/react';
 import { MutableRefObject, RefObject, useCallback, useRef, useState } from 'react';
 import ReactFlow, { Controls, Background, Node, Edge, applyNodeChanges, applyEdgeChanges, addEdge, ReactFlowInstance, ReactFlowProvider, useReactFlow, Connection } from 'reactflow';
 import 'reactflow/dist/style.css';
+import DataNode from './nodes/data-node';
 import DenseNode from './nodes/dense-node';
 import InputNode from './nodes/input-node';
 import OutputNode from './nodes/output-node';
@@ -9,7 +10,12 @@ import SideBar from './sidebar';
 import useGraph, { GraphState } from './store';
 
 
-const nodeTypes: any = { denseNode: DenseNode, inputNode: InputNode, outputNode: OutputNode };
+const nodeTypes: any = { 
+    denseNode: DenseNode, 
+    inputNode: InputNode, 
+    outputNode: OutputNode,
+    dataNode: DataNode,
+ };
 
 const selector = (state: GraphState) => ({
     nodes: state.nodes,

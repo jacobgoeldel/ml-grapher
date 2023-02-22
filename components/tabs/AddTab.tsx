@@ -14,7 +14,7 @@ const AddTab: FC<{}> = () => {
 
                 <VStack w="full" spacing={4} alignItems="start">
                     <Text fontSize='xl' color="white" h="min">Data Nodes</Text>
-                    <Button colorScheme="green" onDragStart={(event) => onDragStart(event, 'denseNode')} draggable width="full">CSV Input</Button>
+                    <Button colorScheme="green" onDragStart={(event) => onDragStart(event, 'dataNode')} draggable width="full">Data Upload</Button>
                 </VStack>
 
                 <VStack w="full" spacing={4} alignItems="start">
