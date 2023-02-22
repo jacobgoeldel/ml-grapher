@@ -1,13 +1,15 @@
 import { Flex, HStack } from '@chakra-ui/react';
 import { MutableRefObject, RefObject, useCallback, useRef, useState } from 'react';
-import ReactFlow, { Controls, Background, Node, Edge, applyNodeChanges, applyEdgeChanges, addEdge, ReactFlowInstance, ReactFlowProvider, useReactFlow } from 'reactflow';
+import ReactFlow, { Controls, Background, Node, Edge, applyNodeChanges, applyEdgeChanges, addEdge, ReactFlowInstance, ReactFlowProvider, useReactFlow, Connection } from 'reactflow';
 import 'reactflow/dist/style.css';
 import DenseNode from './nodes/dense-node';
+import InputNode from './nodes/input-node';
+import OutputNode from './nodes/output-node';
 import SideBar from './sidebar';
 import useGraph, { GraphState } from './store';
 
 
-const nodeTypes: any = { denseNode: DenseNode };
+const nodeTypes: any = { denseNode: DenseNode, inputNode: InputNode, outputNode: OutputNode };
 
 const selector = (state: GraphState) => ({
     nodes: state.nodes,
@@ -69,12 +71,12 @@ const Graph = () => {
         edgeUpdateSuccessful.current = false;
     }, []);
 
-    const onEdgeUpdate = useCallback((oldEdge: Edge, newConnection: Edge) => {
+    const onEdgeUpdate = useCallback((oldEdge: Edge, newConnection: Connection) => {
         edgeUpdateSuccessful.current = true;
         updateEdge(oldEdge, newConnection);
     }, []);
 
-    const onEdgeUpdateEnd = useCallback((_: Edge, edge: Edge) => {
+    const onEdgeUpdateEnd = useCallback((_: any, edge: Edge) => {
         if (!edgeUpdateSuccessful.current) {
             deleteEdge(edge);
         }
