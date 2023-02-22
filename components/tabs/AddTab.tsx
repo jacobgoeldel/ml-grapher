@@ -21,6 +21,7 @@ const AddTab: FC<{}> = () => {
                     <Text fontSize='xl' color="white" h="min">Neural Network Nodes</Text>
                     <Button colorScheme="red" onDragStart={(event) => onDragStart(event, 'inputNode')} draggable width="full">Input Layer</Button>
                     <Button colorScheme="red" onDragStart={(event) => onDragStart(event, 'denseNode')} draggable width="full">Dense Layer</Button>
+                    <Button colorScheme="red" onDragStart={(event) => onDragStart(event, 'outputNode')} draggable width="full">Output Layer</Button>
                 </VStack>
             </VStack>
         </LightMode>

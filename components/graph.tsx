@@ -4,11 +4,12 @@ import ReactFlow, { Controls, Background, Node, Edge, applyNodeChanges, applyEdg
 import 'reactflow/dist/style.css';
 import DenseNode from './nodes/dense-node';
 import InputNode from './nodes/input-node';
+import OutputNode from './nodes/output-node';
 import SideBar from './sidebar';
 import useGraph, { GraphState } from './store';
 
 
-const nodeTypes: any = { denseNode: DenseNode, inputNode: InputNode };
+const nodeTypes: any = { denseNode: DenseNode, inputNode: InputNode, outputNode: OutputNode };
 
 const selector = (state: GraphState) => ({
     nodes: state.nodes,
