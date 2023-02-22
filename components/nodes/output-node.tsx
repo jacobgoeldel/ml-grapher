@@ -1,9 +1,9 @@
 import { Handle, Node, Position } from 'reactflow';
-import { FormControl, FormLabel, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Select } from '@chakra-ui/react';
+import { FormControl, FormLabel, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Select, Text } from '@chakra-ui/react';
 import DefaultNode from './base-node';
 import { useState } from 'react';
 
-const handleStyle = { width: 12, height: 12, top: "128px" };
+const handleStyle = { width: 12, height: 12 };
 
 type TextProp = {
   text: string;
@@ -16,7 +16,8 @@ const OutputNode = (node: Node, data: TextProp) => {
 
   return (
     <DefaultNode node={node} data={data} title="Output Layer" titleColor="red.500">
-      <Handle type="target" position={Position.Left} style={handleStyle} />
+      <Handle type="target" position={Position.Left} id="layer" style={{...handleStyle, top: "128px"}} />
+      <Handle type="target" position={Position.Left} id="data" style={{...handleStyle, top: "342px"}} />
 
       <FormControl mt={4} mb={2}>
         <FormLabel color="white">Activation Function</FormLabel>
@@ -46,6 +47,8 @@ const OutputNode = (node: Node, data: TextProp) => {
           <option>Sigmoid</option>
         </Select>
       </FormControl>
+
+      <Text mt={4} mb={2} color="white">Predict</Text>
     </DefaultNode>
   );
 }
