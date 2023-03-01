@@ -5,20 +5,20 @@ import { extendTheme } from '@chakra-ui/react'
 import { ReactFlowProvider } from 'reactflow'
 
 const config = {
-  initialColorMode: 'dark',
+    initialColorMode: 'dark',
 
-  useSystemColorMode: false,
+    useSystemColorMode: false,
 }
 const theme = extendTheme({ config });
 
 export default function App({ Component, pageProps }: AppProps) {
-  return (
-    <ChakraProvider theme={theme}>
-      <DarkMode>
-        <ReactFlowProvider>
-          <Component {...pageProps} />
-        </ReactFlowProvider>
-      </DarkMode>
-    </ChakraProvider>
-  )
+    return (
+        <ChakraProvider theme={theme}>
+            <DarkMode>
+                <ReactFlowProvider>
+                    <Component {...pageProps} />
+                </ReactFlowProvider>
+            </DarkMode>
+        </ChakraProvider>
+    )
 }
