@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Table, Thead, Tbody, Tr, Th, Td, chakra, HStack, Box, Button } from "@chakra-ui/react";
+import { Table, Thead, Tbody, Tr, Th, Td, chakra, HStack, Box, Button, Text } from "@chakra-ui/react";
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 import {
     useReactTable,
@@ -45,21 +45,26 @@ export function DataTable<Data extends object>({
                                         <Th
                                             key={header.id}
                                             onClick={header.column.getToggleSortingHandler()}
+                                            cursor="pointer"
                                         >
+                                            <HStack>
+                                            <Text>
                                             {flexRender(
                                                 header.column.columnDef.header,
                                                 header.getContext()
-                                            )}
+                                                )}
+                                            </Text>
 
-                                            <chakra.span pl="4">
+                                            <chakra.span pl="2">
                                                 {header.column.getIsSorted() ? (
                                                     header.column.getIsSorted() === "desc" ? (
                                                         <TriangleDownIcon aria-label="sorted descending" />
-                                                    ) : (
-                                                        <TriangleUpIcon aria-label="sorted ascending" />
-                                                    )
-                                                ) : null}
+                                                        ) : (
+                                                            <TriangleUpIcon aria-label="sorted ascending" />
+                                                            )
+                                                            ) : null}
                                             </chakra.span>
+                                            </HStack>
                                         </Th>
                                     );
                                 })}
