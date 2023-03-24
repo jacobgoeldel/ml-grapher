@@ -1,6 +1,7 @@
 import { HStack } from '@chakra-ui/react'
 import Head from 'next/head'
 import Image from 'next/image'
+import ErrorList from '../components/ErrorList'
 import Graph from '../components/graph'
 import SideBar from '../components/sidebar'
 
@@ -16,6 +17,7 @@ export default function Home() {
                 <HStack w="100%" h="100%" spacing={0}>
                     <SideBar />
                     <Graph />
+                    <ErrorList />
                 </HStack>
             </main>
         </div>
