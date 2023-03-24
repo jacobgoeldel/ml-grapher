@@ -1,6 +1,6 @@
 import { Handle, Node, Position, useUpdateNodeInternals } from 'reactflow';
 import { Box, Button, FormControl, FormLabel, Input, LightMode, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Select, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, useDisclosure } from '@chakra-ui/react';
-import DefaultNode from './base-node';
+import DefaultNode, { NodeData } from './base-node';
 import Papa from "papaparse";
 import { useState } from 'react';
 import { DataTable } from '../DataTable';
@@ -8,11 +8,7 @@ import { createColumnHelper } from '@tanstack/react-table';
 
 const handleStyle = { width: 12, height: 12 };
 
-type TextProp = {
-    text: string;
-};
-
-const DataNode = (node: Node, data: TextProp) => {
+const DataNode = (node: Node, data: NodeData) => {
     const [dataSet, setDataSet] = useState<any[][] | undefined>();
     const [columns, setColumns] = useState<any[]>([]);
     const updateNodeInternals = useUpdateNodeInternals();
