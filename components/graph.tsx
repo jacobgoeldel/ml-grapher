@@ -92,8 +92,9 @@ const Graph = () => {
     }, []);
 
     useEffect(() => {
-        console.log(createMLGraph());
-    }, [nodes, edges]);
+        // run update right when it loads to get initial errors
+        createMLGraph();
+    }, []);
 
     return (
         <Flex grow={1} w="full" h="full">

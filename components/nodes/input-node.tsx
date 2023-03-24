@@ -41,7 +41,7 @@ const InputNode = (node: Node, data: NodeData) => {
 			</FormControl>
 			<>
 				{targetArray.map(t => (
-					<Text color="white" mt={4} ml={2}>Input {t + 1}</Text>
+					<Text color="white" mt={4} ml={2} key={t}>Input {t + 1}</Text>
 				))}
 			</>
 		</DefaultNode>
