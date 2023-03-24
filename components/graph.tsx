@@ -1,5 +1,5 @@
 import { Flex, HStack } from '@chakra-ui/react';
-import { MutableRefObject, RefObject, useCallback, useRef, useState } from 'react';
+import { MutableRefObject, RefObject, useCallback, useRef, useEffect } from 'react';
 import ReactFlow, { Controls, Background, Node, Edge, applyNodeChanges, applyEdgeChanges, addEdge, ReactFlowInstance, ReactFlowProvider, useReactFlow, Connection } from 'reactflow';
 import 'reactflow/dist/style.css';
 import DataNode from './nodes/data-node';
@@ -26,6 +26,7 @@ const selector = (state: GraphState) => ({
     createNode: state.createNode,
     deleteEdge: state.deleteEdge,
     updateEdge: state.updateEdge,
+    createMLGraph: state.createMLGraph,
 });
 
 const Graph = () => {
@@ -33,7 +34,7 @@ const Graph = () => {
     const reactFlowWrapper = useRef<any | null>(null);
 
     const edgeUpdateSuccessful = useRef(true);
-    const { nodes, edges, onNodesChange, onEdgesChange, onConnect, createNode, deleteEdge, updateEdge } = useGraph(selector);
+    const { nodes, edges, onNodesChange, onEdgesChange, onConnect, createNode, deleteEdge, updateEdge, createMLGraph } = useGraph(selector);
 
     let id = 0;
     const getId = () => `dndnode_${id++}`;
@@ -64,7 +65,7 @@ const Graph = () => {
                 id: getId(),
                 type,
                 position,
-                data: { label: `${type} node` },
+                data: { getLayerDef: () => {} },
                 dragHandle: '.custom-drag-handle',
             };
 
@@ -89,6 +90,10 @@ const Graph = () => {
 
         edgeUpdateSuccessful.current = true;
     }, []);
+
+    useEffect(() => {
+        console.log(createMLGraph());
+    }, [nodes, edges]);
 
     return (
         <Flex grow={1} w="full" h="full">

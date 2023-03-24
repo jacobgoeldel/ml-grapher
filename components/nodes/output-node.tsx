@@ -1,18 +1,25 @@
 import { Handle, Node, Position } from 'reactflow';
 import { FormControl, FormLabel, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Select, Text } from '@chakra-ui/react';
-import DefaultNode from './base-node';
-import { useState } from 'react';
+import DefaultNode, { NodeData } from './base-node';
+import { useState, useEffect } from 'react';
+import useGraph from '../store';
 
 const handleStyle = { width: 12, height: 12 };
 
-type TextProp = {
-    text: string;
-};
-
-const OutputNode = (node: Node, data: TextProp) => {
+const OutputNode = (node: Node, data: NodeData) => {
     const [outputType, setOutputType] = useState("Classifier");
+    const [classes, setClasses] = useState(2);
+    const [activation, setActivation] = useState("softmax");
+
+    const setLayer = useGraph((state) => state.setLayerDef);
 
     const onTypeChanged = (evt: any) => setOutputType(evt.target.value);
+    const onClassesChanged = (_: string, val: number) => setClasses(val);
+    const onActivationChanged = (evt: any) => setActivation(evt.target.value);
+
+    useEffect(() => {
+        setLayer(node.id, outputType == "Classifier" ? { type: activation, num_classes: classes } : { type:'regression', num_neurons: 3 });
+    }, [outputType, classes, activation]);
 
     return (
         <DefaultNode node={node} data={data} title="Output Layer" titleColor="red.500">
@@ -29,7 +36,7 @@ const OutputNode = (node: Node, data: TextProp) => {
 
             <FormControl isDisabled={outputType != "Classifier"}>
                 <FormLabel color="white">Classes</FormLabel>
-                <NumberInput max={64} min={2} defaultValue={16} color="white">
+                <NumberInput max={64} min={2} value={classes} onChange={onClassesChanged} color="white">
                     <NumberInputField backgroundColor="gray.800" />
                     <NumberInputStepper>
                         <NumberIncrementStepper />
@@ -40,11 +47,9 @@ const OutputNode = (node: Node, data: TextProp) => {
 
             <FormControl mt={4} mb={2} isDisabled={outputType != "Classifier"}>
                 <FormLabel color="white">Activation Function</FormLabel>
-                <Select defaultValue="ReLU" color="white" backgroundColor="gray.800">
-                    <option>ReLU</option>
-                    <option>Tanh</option>
-                    <option>Linear</option>
-                    <option>Sigmoid</option>
+                <Select value={activation} onChange={onActivationChanged} color="white" backgroundColor="gray.800">
+                    <option>softmax</option>
+                    <option>svm</option>
                 </Select>
             </FormControl>
 
