@@ -4,7 +4,7 @@ import { FormControl, FormLabel, NumberDecrementStepper, NumberIncrementStepper,
 import DefaultNode, { NodeData } from './base-node';
 import useGraph from '../store';
 
-const handleStyle = { width: 12, height: 12, top: "47%" };
+const handleStyle = { width: 12, height: 12, top: "47%", backgroundColor: "var(--chakra-colors-red-700)" };
 
 const DenseNode = (node: Node, data: NodeData) => {
     const setLayer = useGraph((state) => state.setLayerDef);
