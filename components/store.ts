@@ -165,7 +165,7 @@ const useGraph = create<GraphState>((set, get) => ({
         // verify we have a complete graph
         
         if(graphStack[graphStack.length - 1].type != "outputNode") {
-            errors.push({type: "error", msg: "Graph has to path between input and output nodes."});
+            errors.push({type: "error", msg: "Graph must have a path between the input and output nodes."});
         } else {
             if(graphStack.length < 4) {
                 errors.push({type: "warning", msg: "Graph is small and may not adequately train."});

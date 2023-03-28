@@ -23,6 +23,11 @@ const AddTab: FC<{}> = () => {
                     <Button colorScheme="red" onDragStart={(event) => onDragStart(event, 'denseNode')} draggable width="full">Dense Layer</Button>
                     <Button colorScheme="red" onDragStart={(event) => onDragStart(event, 'outputNode')} draggable width="full">Output Layer</Button>
                 </VStack>
+
+                <VStack w="full" spacing={4} alignItems="start">
+                    <Text fontSize='xl' color="white" h="min">Utility Nodes</Text>
+                    <Button colorScheme="blue" onDragStart={(event) => onDragStart(event, 'commentNode')} draggable width="full">Comment</Button>
+                </VStack>
             </VStack>
         </LightMode>
     )

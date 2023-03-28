@@ -13,8 +13,8 @@ const ErrorList = () => {
         <LightMode>
             {errors.length > 0 &&
                 <VStack position="absolute" bottom={6} right={6} align="end">
-                    {isOpen && errors.map(e => (
-                        <Alert status={e.type == "error" ? "error" : "warning"} rounded="md">
+                    {isOpen && errors.map((e,i) => (
+                        <Alert status={e.type == "error" ? "error" : "warning"} rounded="md" key={i}>
                             <AlertIcon />
                             <AlertTitle>{e.type == "error" ? "Error" : "Warning"}</AlertTitle>
                             <AlertDescription>{e.msg}</AlertDescription>

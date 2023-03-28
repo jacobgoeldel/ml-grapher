@@ -23,8 +23,8 @@ const OutputNode = (node: Node, data: NodeData) => {
 
     return (
         <DefaultNode node={node} data={data} title="Output Layer" titleColor="red.500">
-            <Handle type="target" position={Position.Left} id="layer" style={{ ...handleStyle, top: "128px" }} />
-            <Handle type="target" position={Position.Left} id="data" style={{ ...handleStyle, top: "342px" }} />
+            <Handle type="target" position={Position.Left} id="layer" style={{ ...handleStyle, top: "128px", backgroundColor: "var(--chakra-colors-red-700)" }} />
+            <Handle type="target" position={Position.Left} id="data" style={{ ...handleStyle, top: "342px", backgroundColor: "var(--chakra-colors-green-700)" }} />
 
             <FormControl mt={4} mb={2}>
                 <FormLabel color="white">Activation Function</FormLabel>

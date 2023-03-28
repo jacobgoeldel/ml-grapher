@@ -4,12 +4,12 @@ import { FormControl, FormLabel, NumberDecrementStepper, NumberIncrementStepper,
 import DefaultNode, { NodeData } from './base-node';
 import useGraph from '../store';
 
-const handleStyle = { width: 12, height: 12, top: "47%" };
+const handleStyle = { width: 12, height: 12, top: "47%", backgroundColor: "var(--chakra-colors-red-700)" };
 
 const DenseNode = (node: Node, data: NodeData) => {
     const setLayer = useGraph((state) => state.setLayerDef);
     const [num_neurons, setNeurons] = useState(8);
-    const [activation, setActivation] = useState("sigmoid");
+    const [activation, setActivation] = useState("relu");
 
     const onNeuronsChanged = (_: string, val: number) => setNeurons(val);
     const onActivationChanged = (evt: any) => setActivation(evt.target.value);
@@ -37,10 +37,10 @@ const DenseNode = (node: Node, data: NodeData) => {
             <FormControl mt={4} mb={2}>
                 <FormLabel color="white">Activation Function</FormLabel>
                 <Select value={activation} onChange={onActivationChanged} color="white" backgroundColor="gray.800">
-                    <option>relu</option>
-                    <option>tanh</option>
-                    <option>maxout</option>
-                    <option>sigmoid</option>
+                    <option value="relu">ReLU</option>
+                    <option value="tanh">Tanh</option>
+                    <option value="maxout">Maxout</option>
+                    <option value="sigmoid">Sigmoid</option>
                 </Select>
             </FormControl>
         </DefaultNode>

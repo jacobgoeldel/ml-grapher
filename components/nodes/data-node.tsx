@@ -38,7 +38,7 @@ const DataNode = (node: Node, data: NodeData) => {
 
             <>
                 {dataSet && columns.map((c: any, i: number) => (
-                    <Handle type="source" position={Position.Right} style={{ ...handleStyle, top: 198 + i * 40 }} key={i} id={`target-handle-${i + 1}`} />
+                    <Handle type="source" position={Position.Right} style={{ ...handleStyle, top: 198 + i * 40, backgroundColor: "var(--chakra-colors-green-700)" }} key={i} id={`target-handle-${i + 1}`} />
                 ))
                 }
             </>
