@@ -2,6 +2,7 @@ import { Flex, HStack } from '@chakra-ui/react';
 import { MutableRefObject, RefObject, useCallback, useRef, useEffect } from 'react';
 import ReactFlow, { Controls, Background, Node, Edge, applyNodeChanges, applyEdgeChanges, addEdge, ReactFlowInstance, ReactFlowProvider, useReactFlow, Connection } from 'reactflow';
 import 'reactflow/dist/style.css';
+import { CommentNode } from './nodes/comment-node';
 import DataNode from './nodes/data-node';
 import DenseNode from './nodes/dense-node';
 import InputNode from './nodes/input-node';
@@ -15,6 +16,7 @@ const nodeTypes: any = {
     inputNode: InputNode, 
     outputNode: OutputNode,
     dataNode: DataNode,
+    commentNode: CommentNode,
  };
 
 const selector = (state: GraphState) => ({
