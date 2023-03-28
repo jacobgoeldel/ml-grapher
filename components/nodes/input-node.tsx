@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Handle, Node, Position, useUpdateNodeInternals } from 'reactflow';
 import { FormControl, FormLabel, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Select, Text } from '@chakra-ui/react';
 import DefaultNode, { NodeData } from './base-node';
@@ -18,7 +18,9 @@ const InputNode = (node: Node, data: NodeData) => {
 		updateNodeInternals(node.id);
 	}
 
-    setLayer(node.id, { type: 'input', out_sx: 1, out_sy: 1, out_depth: inputs });
+	useEffect(() => {
+    	setLayer(node.id, { type: 'input', out_sx: 1, out_sy: 1, out_depth: inputs });
+	}, [inputs]);
 
 	return (
 		<DefaultNode node={node} data={data} title="Input Layer" titleColor="red.500">
