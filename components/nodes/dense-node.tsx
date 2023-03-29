@@ -6,20 +6,30 @@ import useGraph from '../store';
 
 const handleStyle = { width: 12, height: 12, top: "47%", backgroundColor: "var(--chakra-colors-red-700)" };
 
-const DenseNode = (node: Node, data: NodeData) => {
-    const setLayer = useGraph((state) => state.setLayerDef);
-    const [num_neurons, setNeurons] = useState(8);
-    const [activation, setActivation] = useState("relu");
+const DenseNode = (node: Node) => {
+    const { setLayerDef, setNodeData } = useGraph((state) => ({
+        setLayerDef: state.setLayerDef,
+        setNodeData: state.setNodeData
+    }));
+
+    const [num_neurons, setNeurons] = useState(node.data.neurons || 8);
+    const [activation, setActivation] = useState(node.data.activation || "relu");
 
     const onNeuronsChanged = (_: string, val: number) => setNeurons(val);
     const onActivationChanged = (evt: any) => setActivation(evt.target.value);
 
+    const updateData = () => setNodeData(node.id, {
+        neurons: num_neurons,
+        activation
+    });
+
     useEffect(() => {
-        setLayer(node.id, { type: 'fc', num_neurons, activation });
+        setLayerDef(node.id, { type: 'fc', num_neurons, activation });
+        updateData();
     }, [num_neurons, activation]);
 
     return (
-        <DefaultNode node={node} data={data} title="Dense Layer" titleColor="red.500">
+        <DefaultNode node={node} data={node.data} title="Dense Layer" titleColor="red.500">
             <Handle type="target" position={Position.Left} style={handleStyle} />
             <Handle type="source" position={Position.Right} style={handleStyle} />
 

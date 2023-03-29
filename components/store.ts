@@ -26,6 +26,7 @@ export type GraphState = {
     edges: Edge[];
     layerDefs: Map<string, any>;
     errors: ErrorMessage[];
+    graphName: string;
     onNodesChange: OnNodesChange;
     onEdgesChange: OnEdgesChange;
     onConnect: OnConnect;
@@ -33,8 +34,13 @@ export type GraphState = {
     deleteEdge: (edge: Edge) => void;
     createNode: (node: Node) => void;
     deleteNode: (id: string) => void;
+    setNodeData: (id: string, data: any) => void;
+    setGraphName: (name: string) => void;
     setLayerDef: (nodeName: string, layer: any) => void;
     createMLGraph: () => any[] | undefined;
+    clearGraph: () => void;
+    getGraphJson: () => any;
+    loadGraphJson: (data: any) => void;
 };
 
 export type ErrorMessage = {
@@ -46,6 +52,7 @@ const useGraph = create<GraphState>((set, get) => ({
     nodes: initialNodes,
     edges: initialEdges,
     layerDefs: new Map(),
+    graphName: "",
     errors: [],
     onNodesChange: (changes: NodeChange[]) => {
         set({
@@ -59,7 +66,8 @@ const useGraph = create<GraphState>((set, get) => ({
     },
     onConnect: (connection: Connection) => {
         set({
-            edges: addEdge(connection, get().edges.filter(e => e.target != connection.target && e.source != connection.source)),
+            edges: addEdge(connection, get().edges.filter(e => !(e.target == connection.target && e.targetHandle == connection.targetHandle) &&
+                                                               !(e.source == connection.source && e.sourceHandle == connection.sourceHandle))),
         });
 
         // run to test for errors
@@ -97,6 +105,24 @@ const useGraph = create<GraphState>((set, get) => ({
 
         // run to test for errors
         get().createMLGraph();
+    },
+    setNodeData: (id: string, data: any) => {
+        const nodeIndex = get().nodes.findIndex(n => n.id == id);
+
+        if(nodeIndex == -1)
+            return;
+
+        let nodes = get().nodes;
+        nodes[nodeIndex].data = data;
+
+        set({
+            nodes
+        });
+    },
+    setGraphName: (name) => {
+        set({
+            graphName: name
+        });
     },
     setLayerDef: (nodeName: string, layer: any) => {
         set({
@@ -183,6 +209,34 @@ const useGraph = create<GraphState>((set, get) => ({
         }
 
         return undefined;
+    },
+    clearGraph: () => {
+        set({
+            nodes: [],
+            edges: [],
+            layerDefs: new Map(),
+            graphName: "",
+            errors: [],
+        });
+
+        get().createMLGraph();
+    },
+    getGraphJson: () => {
+        return {
+            nodes: get().nodes,
+            edges: get().edges,
+            graphName: get().graphName,
+        }
+    },
+    loadGraphJson: (data: any) => {
+        console.log(data);
+        set({
+            nodes: data.nodes,
+            edges: data.edges,
+            graphName: data.graphName
+        });
+
+        get().createMLGraph();
     }
 }));
 
