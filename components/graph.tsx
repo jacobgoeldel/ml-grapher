@@ -7,7 +7,7 @@ import DataNode from './nodes/data-node';
 import DenseNode from './nodes/dense-node';
 import InputNode from './nodes/input-node';
 import OutputNode from './nodes/output-node';
-import SideBar from './sidebar';
+import { v4 as uuidv4 } from 'uuid';
 import useGraph, { GraphState } from './store';
 
 
@@ -38,9 +38,6 @@ const Graph = () => {
     const edgeUpdateSuccessful = useRef(true);
     const { nodes, edges, onNodesChange, onEdgesChange, onConnect, createNode, deleteEdge, updateEdge, createMLGraph } = useGraph(selector);
 
-    let id = 0;
-    const getId = () => `dndnode_${id++}`;
-
     const onDragOver = useCallback((event: any) => {
         event.preventDefault();
         event.dataTransfer.dropEffect = 'move';
@@ -64,7 +61,7 @@ const Graph = () => {
             });
 
             const newNode: Node = {
-                id: getId(),
+                id: uuidv4(),
                 type,
                 position,
                 data: { },
