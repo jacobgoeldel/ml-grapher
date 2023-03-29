@@ -67,7 +67,7 @@ const Graph = () => {
                 id: getId(),
                 type,
                 position,
-                data: { getLayerDef: () => {} },
+                data: { },
                 dragHandle: '.custom-drag-handle',
             };
 

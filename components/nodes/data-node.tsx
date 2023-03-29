@@ -1,8 +1,8 @@
 import { Handle, Node, Position, useUpdateNodeInternals } from 'reactflow';
-import { Box, Button, FormControl, FormLabel, Input, LightMode, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Select, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, useDisclosure } from '@chakra-ui/react';
+import { Box, Button, FormControl, FormLabel, HStack, Input, LightMode, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Select, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, useDisclosure } from '@chakra-ui/react';
 import DefaultNode, { NodeData } from './base-node';
 import Papa from "papaparse";
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { DataTable } from '../DataTable';
 import { createColumnHelper } from '@tanstack/react-table';
 
@@ -14,12 +14,18 @@ const DataNode = (node: Node, data: NodeData) => {
     const updateNodeInternals = useUpdateNodeInternals();
     const { isOpen, onOpen, onClose } = useDisclosure();
     const columnHelper = createColumnHelper<any>();
+    const [fileName, setFileName] = useState("");
+
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    const uploadClicked = () => inputRef?.current?.click();
 
     const loadData = (e: any) => {
         const files = e.target.files;
         if (files) {
             Papa.parse(files[0], {
                 complete: function (results: any) {
+                    setFileName(files[0].name);
                     console.log(results);
                     setDataSet(results.data);
 
@@ -38,27 +44,35 @@ const DataNode = (node: Node, data: NodeData) => {
 
             <>
                 {dataSet && columns.map((c: any, i: number) => (
-                    <Handle type="source" position={Position.Right} style={{ ...handleStyle, top: 198 + i * 40, backgroundColor: "var(--chakra-colors-green-700)" }} key={i} id={`target-handle-${i + 1}`} />
+                    <Handle type="source" position={Position.Right} style={{ ...handleStyle, top: 230 + i * 40, backgroundColor: "var(--chakra-colors-green-700)" }} key={i} id={`target-handle-${i + 1}`} />
                 ))
                 }
             </>
 
             <FormControl>
-                <FormLabel color="white">File</FormLabel>
                 <Input
-                    style={{ paddingLeft: 0 }}
-                    border={0}
-                    color="white"
+                    style={{ display: "none" }}
                     type="file"
                     accept=".csv,.xlsx,.xls"
                     onChange={loadData}
+                    ref={inputRef}
                 />
+                <LightMode>
+                    <HStack p={4} spacing={10} justifyContent="space-between">
+                        <Text color="white">{fileName}</Text>
+                        <Button colorScheme="green" onClick={uploadClicked}>
+                            Upload File
+                        </Button>
+                    </HStack>
+                </LightMode>
             </FormControl>
 
             <>
                 {dataSet &&
                     <LightMode>
-                        <Button width="full" colorScheme="green" onClick={onOpen}>View Data</Button>
+                        <Box p={4}>
+                            <Button width="full" colorScheme="green" onClick={onOpen}>View Data</Button>
+                        </Box>
                     </LightMode>
                 }
             </>
