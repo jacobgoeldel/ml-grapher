@@ -7,18 +7,22 @@ import useGraph from '../store';
 const handleStyle = { width: 12, height: 12 };
 
 const OutputNode = (node: Node, data: NodeData) => {
-    const [outputType, setOutputType] = useState("Classifier");
-    const [classes, setClasses] = useState(2);
-    const [activation, setActivation] = useState("softmax");
+    const [outputType, setOutputType] = useState(node.data.outputType || "Classifier");
+    const [classes, setClasses] = useState(node.data.classes || 2);
+    const [activation, setActivation] = useState(node.data.activation || "softmax");
 
-    const setLayer = useGraph((state) => state.setLayerDef);
+    const { setLayerDef, setNodeData } = useGraph((state) => ({
+        setLayerDef: state.setLayerDef,
+        setNodeData: state.setNodeData
+    }));
 
     const onTypeChanged = (evt: any) => setOutputType(evt.target.value);
     const onClassesChanged = (_: string, val: number) => setClasses(val);
     const onActivationChanged = (evt: any) => setActivation(evt.target.value);
 
     useEffect(() => {
-        setLayer(node.id, outputType == "Classifier" ? { type: activation, num_classes: classes } : { type:'regression', num_neurons: 3 });
+        setLayerDef(node.id, outputType == "Classifier" ? { type: activation, num_classes: classes } : { type:'regression', num_neurons: 3 });
+        setNodeData(node.id, { outputType, classes, activation });
     }, [outputType, classes, activation]);
 
     return (

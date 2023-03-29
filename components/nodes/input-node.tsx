@@ -7,10 +7,14 @@ import useGraph from '../store';
 const handleStyle = { width: 12, height: 12 };
 
 const InputNode = (node: Node, data: NodeData) => {
-	const [inputs, setInputs] = useState(1);
-	const [targetArray, setTargetArray] = useState<number[]>([0]);
+	const [inputs, setInputs] = useState(node.data.inputs || 1);
+	const [targetArray, setTargetArray] = useState<number[]>(Array.from({ length: node.data.inputs || 0 }, (_, i) => i));
 	const updateNodeInternals = useUpdateNodeInternals();
-	const setLayer = useGraph((state) => state.setLayerDef);
+
+	const { setLayerDef, setNodeData } = useGraph((state) => ({
+        setLayerDef: state.setLayerDef,
+        setNodeData: state.setNodeData
+    }));
 
 	const inputsChanged = (_: string, val: number) => {
 		setInputs(val);
@@ -19,7 +23,8 @@ const InputNode = (node: Node, data: NodeData) => {
 	}
 
 	useEffect(() => {
-    	setLayer(node.id, { type: 'input', out_sx: 1, out_sy: 1, out_depth: inputs });
+    	setLayerDef(node.id, { type: 'input', out_sx: 1, out_sy: 1, out_depth: inputs });
+		setNodeData(node.id, { inputs });
 	}, [inputs]);
 
 	return (

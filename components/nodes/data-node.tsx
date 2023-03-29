@@ -5,16 +5,22 @@ import Papa from "papaparse";
 import { useRef, useState } from 'react';
 import { DataTable } from '../DataTable';
 import { createColumnHelper } from '@tanstack/react-table';
+import useGraph from '../store';
 
 const handleStyle = { width: 12, height: 12 };
 
 const DataNode = (node: Node, data: NodeData) => {
-    const [dataSet, setDataSet] = useState<any[][] | undefined>();
-    const [columns, setColumns] = useState<any[]>([]);
+    const [dataSet, setDataSet] = useState<any[][] | undefined>(node.data.dataSet || undefined);
+    const [columns, setColumns] = useState<any[]>(node.data.columns || undefined);
     const updateNodeInternals = useUpdateNodeInternals();
     const { isOpen, onOpen, onClose } = useDisclosure();
     const columnHelper = createColumnHelper<any>();
-    const [fileName, setFileName] = useState("");
+    const [fileName, setFileName] = useState(node.data.fileName || "");
+
+    const { setLayerDef, setNodeData } = useGraph((state) => ({
+        setLayerDef: state.setLayerDef,
+        setNodeData: state.setNodeData
+    }));
 
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -32,6 +38,13 @@ const DataNode = (node: Node, data: NodeData) => {
                     const newCols = results.meta.fields.map((c: string, i: number) => columnHelper.accessor(c, { header: c, id: `${i}` }));
                     console.log(newCols);
                     setColumns(newCols);
+
+                    setNodeData(node.id, {
+                        dataSet: results.data,
+                        columns: newCols,
+                        fileName: files[0].name
+                    });
+
                     updateNodeInternals(node.id);
                 },
                 header: true
