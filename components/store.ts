@@ -66,7 +66,8 @@ const useGraph = create<GraphState>((set, get) => ({
     },
     onConnect: (connection: Connection) => {
         set({
-            edges: addEdge(connection, get().edges.filter(e => e.target != connection.target && e.source != connection.source)),
+            edges: addEdge(connection, get().edges.filter(e => !(e.target == connection.target && e.targetHandle == connection.targetHandle) &&
+                                                               !(e.source == connection.source && e.sourceHandle == connection.sourceHandle))),
         });
 
         // run to test for errors
