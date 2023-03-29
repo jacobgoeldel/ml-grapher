@@ -21,7 +21,7 @@ const OutputNode = (node: Node, data: NodeData) => {
     const onActivationChanged = (evt: any) => setActivation(evt.target.value);
 
     useEffect(() => {
-        setLayerDef(node.id, outputType == "Classifier" ? { type: activation, num_classes: classes } : { type:'regression', num_neurons: 3 });
+        setLayerDef(node.id, outputType == "Classifier" ? { type: activation, num_classes: classes } : { type:'regression', num_neurons: 1 });
         setNodeData(node.id, { outputType, classes, activation });
     }, [outputType, classes, activation]);
 

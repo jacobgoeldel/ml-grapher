@@ -92,7 +92,7 @@ const DataNode = (node: Node, data: NodeData) => {
 
             <>
                 {dataSet && columns.map((c: any) => (
-                    <Text color="white" mt={4} mr={2} textAlign="right">"{c.header}"</Text>
+                    <Text color="white" mt={4} mr={2} textAlign="right" key={c.header}>"{c.header}"</Text>
                 ))}
             </>
 
