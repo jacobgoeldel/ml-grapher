@@ -25,6 +25,7 @@ export type GraphState = {
     nodes: Node[];
     edges: Edge[];
     layerDefs: Map<string, any>;
+    dataSets: Map<string, DataSet | undefined>;
     errors: ErrorMessage[];
     graphName: string;
     onNodesChange: OnNodesChange;
@@ -37,6 +38,8 @@ export type GraphState = {
     setNodeData: (id: string, data: any) => void;
     setGraphName: (name: string) => void;
     setLayerDef: (nodeName: string, layer: any) => void;
+    setDataSet: (nodeId: string, data: DataSet | undefined) => void;
+    getDataSet: (nodeId: string) => DataSet | undefined;
     createMLGraph: () => any[] | undefined;
     clearGraph: () => void;
     getGraphJson: () => any;
@@ -48,10 +51,17 @@ export type ErrorMessage = {
     msg: string;
 }
 
+export type DataSet = {
+    fileName: string;
+    cols: string[];
+    data: any[];
+}
+
 const useGraph = create<GraphState>((set, get) => ({
     nodes: initialNodes,
     edges: initialEdges,
     layerDefs: new Map(),
+    dataSets: new Map(),
     graphName: "",
     errors: [],
     onNodesChange: (changes: NodeChange[]) => {
@@ -129,6 +139,10 @@ const useGraph = create<GraphState>((set, get) => ({
             layerDefs: get().layerDefs.set(nodeName, layer)
         });
     },
+    setDataSet: (nodeId, data) => set({
+        dataSets: get().dataSets.set(nodeId, data)
+    }),
+    getDataSet: (nodeId) => get().dataSets.get(nodeId),
     createMLGraph: () => {
         const graphStack: Node<NodeData>[] = [];
         const inputNode = get().nodes.find(n => n.type == "inputNode");
@@ -226,6 +240,7 @@ const useGraph = create<GraphState>((set, get) => ({
             nodes: get().nodes,
             edges: get().edges,
             graphName: get().graphName,
+            dataSets: get().dataSets,
         }
     },
     loadGraphJson: (data: any) => {
@@ -233,7 +248,8 @@ const useGraph = create<GraphState>((set, get) => ({
         set({
             nodes: data.nodes,
             edges: data.edges,
-            graphName: data.graphName
+            graphName: data.graphName,
+            dataSets: data.dataSets,
         });
 
         get().createMLGraph();
