@@ -46,7 +46,9 @@ const TokenizerNode = (node: Node, data: NodeData) => {
                     fileName: "Tokenizer",
                     cols: [newColname],
                     data: prevData!.data.map((val) => {
-                        return newTokens.get(val[newEdge.sourceHandle!]);
+                        return {
+                            "tokenizedData": newTokens.get(val[newEdge.sourceHandle!])
+                        }
                     })
                 }
 
@@ -71,7 +73,8 @@ const TokenizerNode = (node: Node, data: NodeData) => {
                 type="source" 
                 position={Position.Right} 
                 style={{ ...handleStyle, top: 70, backgroundColor: "var(--chakra-colors-green-700)" }} 
-                key={0} 
+                key={0}
+                id="tokenizedData"
             />
             
             <Handle 
