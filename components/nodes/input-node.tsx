@@ -11,7 +11,9 @@ const InputNode = (node: Node, data: NodeData) => {
 	const [targetArray, setTargetArray] = useState<number[]>(Array.from({ length: node.data.inputs || 0 }, (_, i) => i));
 	const updateNodeInternals = useUpdateNodeInternals();
 
-	const { setLayerDef, setNodeData } = useGraph((state) => ({
+	const { setLayerDef, setNodeData, edges, getDataSet } = useGraph((state) => ({
+		edges: state.edges,
+		getDataSet: state.getDataSet,
         setLayerDef: state.setLayerDef,
         setNodeData: state.setNodeData
     }));
@@ -22,10 +24,32 @@ const InputNode = (node: Node, data: NodeData) => {
 		updateNodeInternals(node.id);
 	}
 
+	// update the model layer definition when # of inputs change
 	useEffect(() => {
     	setLayerDef(node.id, { type: 'input', out_sx: 1, out_sy: 1, out_depth: inputs });
 		setNodeData(node.id, { inputs });
 	}, [inputs]);
+
+	// update data when data sources change
+	useEffect(() => {
+		// TODO: check if the edges changed are for the input node before reloading data
+
+		const dataEdges = edges.filter(e => e.target == node.id);
+
+		// array of columns for each input data handle
+		const data = dataEdges.map(e => {
+			const edgeDataSet = getDataSet(e.source);
+
+			if(edgeDataSet != undefined) {
+				const column: string = e.sourceHandle!;
+				return edgeDataSet.data.map(d => parseFloat(d[column]));
+			}
+
+			return [];
+		});
+
+		console.log(data);
+	}, [edges]);
 
 	return (
 		<DefaultNode node={node} data={data} title="Input Layer" titleColor="red.500">

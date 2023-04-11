@@ -44,7 +44,7 @@ const TokenizerNode = (node: Node, data: NodeData) => {
                 // build dataset
                 const newData: DataSet = {
                     fileName: "Tokenizer",
-                    cols: [newColname],
+                    cols: ["tokenizedData"],
                     data: prevData!.data.map((val) => {
                         return {
                             "tokenizedData": newTokens.get(val[newEdge.sourceHandle!])
