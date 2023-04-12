@@ -25,6 +25,7 @@ export type GraphState = {
     nodes: Node[];
     edges: Edge[];
     layerDefs: Map<string, any>;
+    dataSets: Map<string, DataSet | undefined>;
     errors: ErrorMessage[];
     graphName: string;
     onNodesChange: OnNodesChange;
@@ -37,7 +38,9 @@ export type GraphState = {
     setNodeData: (id: string, data: any) => void;
     setGraphName: (name: string) => void;
     setLayerDef: (nodeName: string, layer: any) => void;
-    createMLGraph: () => any[] | undefined;
+    setDataSet: (nodeId: string, data: DataSet | undefined) => void;
+    getDataSet: (nodeId: string) => DataSet | undefined;
+    createMLGraph: () => GraphEnv | undefined;
     clearGraph: () => void;
     getGraphJson: () => any;
     loadGraphJson: (data: any) => void;
@@ -48,10 +51,23 @@ export type ErrorMessage = {
     msg: string;
 }
 
+export type DataSet = {
+    fileName: string;
+    cols: string[];
+    data: any[];
+}
+
+export type GraphEnv = {
+    data: number[][];
+    labels: number[];
+    graph: any[];
+}
+
 const useGraph = create<GraphState>((set, get) => ({
     nodes: initialNodes,
     edges: initialEdges,
     layerDefs: new Map(),
+    dataSets: new Map(),
     graphName: "",
     errors: [],
     onNodesChange: (changes: NodeChange[]) => {
@@ -129,6 +145,10 @@ const useGraph = create<GraphState>((set, get) => ({
             layerDefs: get().layerDefs.set(nodeName, layer)
         });
     },
+    setDataSet: (nodeId, data) => set({
+        dataSets: get().dataSets.set(nodeId, data)
+    }),
+    getDataSet: (nodeId) => get().dataSets.get(nodeId),
     createMLGraph: () => {
         const graphStack: Node<NodeData>[] = [];
         const inputNode = get().nodes.find(n => n.type == "inputNode");
@@ -205,7 +225,11 @@ const useGraph = create<GraphState>((set, get) => ({
         set({ errors });
 
         if(graphStack.length > 2 && graphStack[graphStack.length - 1].type == "outputNode") {
-            return graphStack.map(n => get().layerDefs.get(n.id));
+            return {
+                data: inputNode!.data.inputData,
+                labels: outputNode!.data.outputData,
+                graph: graphStack.map(n => get().layerDefs.get(n.id))
+            };
         }
 
         return undefined;
@@ -226,6 +250,7 @@ const useGraph = create<GraphState>((set, get) => ({
             nodes: get().nodes,
             edges: get().edges,
             graphName: get().graphName,
+            dataSets: get().dataSets,
         }
     },
     loadGraphJson: (data: any) => {
@@ -233,7 +258,8 @@ const useGraph = create<GraphState>((set, get) => ({
         set({
             nodes: data.nodes,
             edges: data.edges,
-            graphName: data.graphName
+            graphName: data.graphName,
+            dataSets: data.dataSets,
         });
 
         get().createMLGraph();

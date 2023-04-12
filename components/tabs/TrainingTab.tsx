@@ -1,9 +1,26 @@
-import { Alert, AlertDescription, AlertIcon, AlertTitle, Box, Button, DarkMode, Flex, LightMode, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Select, Slider, SliderFilledTrack, SliderMark, SliderThumb, SliderTrack, Text, VStack } from "@chakra-ui/react";
-import { FC, useState } from "react";
+import { Alert, AlertDescription, AlertIcon, AlertTitle, Box, Button, DarkMode, Flex, LightMode, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Select, Slider, SliderFilledTrack, SliderMark, SliderThumb, SliderTrack, Text, Tooltip, VStack } from "@chakra-ui/react";
+import { FC, useEffect, useState } from "react";
 import useGraph from "../store";
-import { Trainer } from "convnetjs";
+import { Trainer, Vol, Net } from "convnetjs";
+import { useAsyncFn } from "react-use";
+import { ResponsiveContainer, LineChart, CartesianGrid, XAxis, YAxis, Legend, Line, Tooltip as GraphTooltip } from "recharts";
 
 const clamp = (val: number, min: number, max: number) => val < min ? min : (val > max ? max : val);
+
+const setIntervalX = (callback, delay, repetitions, done) => {
+    var x = 0;
+    var intervalID = window.setInterval(function () {
+
+        callback();
+
+        if (++x === repetitions) {
+            window.clearInterval(intervalID);
+            done();
+        }
+    }, delay);
+
+    return intervalID;
+}
 
 const TrainingTab: FC<{}> = () => {
     const { errors, createMLGraph } = useGraph((state) => ({
@@ -18,40 +35,124 @@ const TrainingTab: FC<{}> = () => {
     const [epochs, setEpochs] = useState(10);
     const [trainingSplit, setTrainingSplit] = useState(75);
 
+    const [trainer, setTrainer] = useState<any | undefined>();
+    const [data, setData] = useState<any | undefined>();
+    const [labels, setLabels] = useState<any | undefined>();
+    const [trainerInterv, setTrainerInterv] = useState<any | undefined>();
+    const [training, setTraining] = useState(false);
+    const [loss, setLoss] = useState<number | undefined>();
+    const [lossGraph, setLossGraph] = useState<any[]>([]);
+
     const hasErrors = errors.find(e => e.type == "error") != undefined;
 
     const methodChanged = (evt: any) => setMethod(evt.target.value);
 
+    const trainingStep = (data, labels, trainer) => {
+
+        if (data == undefined || labels == undefined || trainer == undefined)
+            return;
+
+        // loop through data epochs
+        let totalLoss = 0;
+
+        // loop through dataset
+        for (var i = 0; i < data[0].length; i++) {
+            var x = new Vol(1, 1, data.length, 0.0); // a 1x1xn volume initialized to 0's.
+
+            // map each columns data into the volume
+            for (var j = 0; j < data.length; j++) {
+                x.w[j] = data[j][i];
+            }
+
+            const stats = trainer.train(x, labels[i]);
+            totalLoss += isNaN(stats.cost_loss) ? 0 : stats.cost_loss;
+        }
+
+        const avgloss = totalLoss / data[0].length;
+
+        if (avgloss != Infinity) {
+            console.log(avgloss);
+            setLoss(prevLoss => avgloss);
+            setLossGraph(prev => [...prev, { epoch: prev.length + 1, loss: avgloss }])
+        }
+
+        setTrainer((val: any) => trainer);
+    }
+
     const startTraining = () => {
-        let net = createMLGraph();
-        console.log("Network", net);
+        let { graph, data, labels } = createMLGraph()!;
+        console.log("Network", graph);
+        console.log(data);
+        console.log(labels);
 
         // shouldn't be possible but just in case
-        if (net == undefined)
+        if (graph == undefined)
             return;
 
         const trainerConfig = {
-            method, 
+            method,
             learning_rate: method == "sgd" ? learningRate : undefined,
-            l2_decay: decay, 
-            momentum: method == "sgd" ? 0.9 : undefined, 
+            l2_decay: decay,
+            momentum: method == "sgd" ? 0.9 : undefined,
             batch_size: batchSize,
         };
 
         console.log("Trainer", trainerConfig);
 
+        // create a net
+        let net = new Net();
+        net.makeLayers(graph);
+
         let trainer = new Trainer(net, trainerConfig);
+
+        setTrainerInterv(setIntervalX(
+            () => trainingStep(data, labels, trainer),
+            0,
+            epochs,
+            () => {
+                setTrainerInterv(false);
+                setTraining(false);
+            }));
+
+        setData(data);
+        setLabels(labels);
+        setTraining(true);
+        setLossGraph([]);
+        setLoss(undefined);
+        setTrainer(undefined);
     }
 
-    const labelStyles = {
-        mt: '2',
-        ml: '-2.5',
-        fontSize: 'sm',
+    const resumeTraining = () => {
+        setTrainerInterv(setIntervalX(
+            () => trainingStep(data, labels, trainer),
+            0,
+            epochs,
+            () => {
+                setTrainerInterv(false);
+                setTraining(false);
+            }));
+        
+        setTraining(true);
+    }
+
+    const clearTraining = () => {
+        setData(undefined);
+        setLabels(undefined);
+        setTraining(false);
+        setLossGraph([]);
+        setLoss(undefined);
+        setTrainer(undefined);
+    }
+
+    const stopTraining = () => {
+        clearInterval(trainerInterv);
+        setTrainerInterv(undefined);
+        setTraining(false);
     }
 
     return (
         <LightMode>
-            <VStack h="full" w="400px" backgroundColor="gray.800" p={8} spacing={12} dropShadow="lg" alignItems="start">
+            <VStack h="full" w="500px" backgroundColor="gray.800" p={8} spacing={12} dropShadow="lg" alignItems="start">
                 <Text fontSize='4xl' color="white" h="min">Training</Text>
 
                 <VStack w="full" spacing={4} alignItems="start">
@@ -94,7 +195,7 @@ const TrainingTab: FC<{}> = () => {
                         </DarkMode>
                     </Flex>
 
-                    <Flex alignItems="center" justifyContent="space-between" width="full">
+                    {/* <Flex alignItems="center" justifyContent="space-between" width="full">
                         <Text color="white" flex={1}>Batch Size:</Text>
                         <DarkMode>
                             <NumberInput max={1024} min={1} value={batchSize} onChange={(text, val) => setBatchSize(val)} color="white" flex={1}>
@@ -105,7 +206,7 @@ const TrainingTab: FC<{}> = () => {
                                 </NumberInputStepper>
                             </NumberInput>
                         </DarkMode>
-                    </Flex>
+                    </Flex> */}
 
                     <Flex alignItems="center" justifyContent="space-between" width="full">
                         <Text color="white" flex={1}>Epochs:</Text>
@@ -120,7 +221,7 @@ const TrainingTab: FC<{}> = () => {
                         </DarkMode>
                     </Flex>
 
-                    <Flex alignItems="center" justifyContent="space-between" width="full" pt={8}>
+                    {/* <Flex alignItems="center" justifyContent="space-between" width="full" pt={8}>
                         <Text color="white" flex={1}>Training Split:</Text>
                         <DarkMode>
                             <Box pt={6} pb={2} flex={2}>
@@ -150,7 +251,7 @@ const TrainingTab: FC<{}> = () => {
                                 </Slider>
                             </Box>
                         </DarkMode>
-                    </Flex>
+                    </Flex> */}
                 </VStack>
 
                 <VStack w="full" spacing={4} alignItems="start">
@@ -161,7 +262,33 @@ const TrainingTab: FC<{}> = () => {
                             <AlertTitle>Fix Errors Before Training</AlertTitle>
                         </Alert>
                     }
-                    <Button colorScheme="green" width="full" isDisabled={hasErrors} onClick={startTraining}>Start Training</Button>
+
+                    {lossGraph.length > 0 &&
+                        <Box backgroundColor="gray.900" padding={8} pl={6} rounded="md">
+                            <LineChart
+                                width={400}
+                                height={200}
+                                data={lossGraph}
+                            >
+                                <CartesianGrid strokeDasharray="3 3" stroke="var(--chakra-colors-gray-700)" />
+                                <XAxis dataKey="epoch" />
+                                <Legend />
+                                <GraphTooltip labelFormatter={(label) => `Epoch ${label}`} />
+                                <Line type="monotone" dataKey="loss" stroke="#8884d8" strokeWidth={2} dot={false} animateNewValues={false} isAnimationActive={false} />
+                            </LineChart>
+                        </Box>
+                    }
+                    {loss != undefined && <Text fontSize='xl' color="white">Loss: {loss?.toLocaleString(undefined, { maximumFractionDigits: 4 })}</Text>}
+
+                    {training ?
+                        <Button colorScheme="red" width="full" isDisabled={hasErrors} onClick={stopTraining}>Stop Training</Button> :
+                        (trainer == undefined ?
+                            <Button colorScheme="green" width="full" isDisabled={hasErrors} onClick={startTraining}>Start Training</Button> :
+                            <>
+                                <Button colorScheme="green" width="full" isDisabled={hasErrors} onClick={resumeTraining}>Resume Training</Button>
+                                <Button colorScheme="red" width="full" isDisabled={hasErrors} onClick={clearTraining}>Clear Training</Button>
+                            </>
+                        )}
                 </VStack>
             </VStack>
         </LightMode>

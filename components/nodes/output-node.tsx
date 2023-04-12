@@ -9,20 +9,53 @@ const handleStyle = { width: 12, height: 12 };
 const OutputNode = (node: Node, data: NodeData) => {
     const [outputType, setOutputType] = useState(node.data.outputType || "Classifier");
     const [classes, setClasses] = useState(node.data.classes || 2);
+    const [outputData, setOutputData] = useState(node.data.outputData || []);
     const [activation, setActivation] = useState(node.data.activation || "softmax");
 
-    const { setLayerDef, setNodeData } = useGraph((state) => ({
+    const { edges, setLayerDef, setNodeData, getDataSet } = useGraph((state) => ({
+        edges: state.edges,
         setLayerDef: state.setLayerDef,
-        setNodeData: state.setNodeData
+        setNodeData: state.setNodeData,
+        getDataSet: state.getDataSet,
     }));
 
     const onTypeChanged = (evt: any) => setOutputType(evt.target.value);
     const onClassesChanged = (_: string, val: number) => setClasses(val);
     const onActivationChanged = (evt: any) => setActivation(evt.target.value);
 
+    // update data when data sources change
+	useEffect(() => {
+		// TODO: check if the edges changed are for the input node before reloading data
+
+		const edge = edges.find(e => e.target == node.id && e.targetHandle == "data");
+
+		if(edge != undefined) {
+			const edgeDataSet = getDataSet(edge.source);
+
+			if(edgeDataSet != undefined) {
+				const column: string = edge.sourceHandle!;
+				let data: number[] | number[][] = edgeDataSet.data.map(d => {
+                    let val = parseFloat(d[column]);
+                    return isNaN(val) ? 0 : val;
+                });
+
+                if(outputType == "Regression") {
+                    data = data.map(d => [d]);
+                }
+
+                setOutputData(data);
+		        setNodeData(node.id, { outputType, classes, activation, outputData: data });
+			}
+        } else {
+            setOutputData([]);
+            setNodeData(node.id, { outputType, classes, activation, outputData: [] });
+        }
+		
+	}, [edges]);
+
     useEffect(() => {
         setLayerDef(node.id, outputType == "Classifier" ? { type: activation, num_classes: classes } : { type:'regression', num_neurons: 1 });
-        setNodeData(node.id, { outputType, classes, activation });
+        setNodeData(node.id, { outputType, classes, activation, outputData });
     }, [outputType, classes, activation]);
 
     return (

@@ -9,6 +9,7 @@ import InputNode from './nodes/input-node';
 import OutputNode from './nodes/output-node';
 import { v4 as uuidv4 } from 'uuid';
 import useGraph, { GraphState } from './store';
+import TokenizerNode from './nodes/tokenizer-node';
 
 
 const nodeTypes: any = { 
@@ -17,6 +18,7 @@ const nodeTypes: any = {
     outputNode: OutputNode,
     dataNode: DataNode,
     commentNode: CommentNode,
+    tokenizerNode: TokenizerNode,
  };
 
 const selector = (state: GraphState) => ({
