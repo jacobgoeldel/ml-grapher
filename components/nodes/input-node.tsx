@@ -9,6 +9,7 @@ const handleStyle = { width: 12, height: 12 };
 const InputNode = (node: Node, data: NodeData) => {
 	const [inputs, setInputs] = useState(node.data.inputs || 1);
 	const [targetArray, setTargetArray] = useState<number[]>(Array.from({ length: node.data.inputs || 0 }, (_, i) => i));
+	const [inputData, setInputData] = useState<number[][]>(node.data.inputData || []);
 	const updateNodeInternals = useUpdateNodeInternals();
 
 	const { setLayerDef, setNodeData, edges, getDataSet } = useGraph((state) => ({
@@ -27,7 +28,7 @@ const InputNode = (node: Node, data: NodeData) => {
 	// update the model layer definition when # of inputs change
 	useEffect(() => {
     	setLayerDef(node.id, { type: 'input', out_sx: 1, out_sy: 1, out_depth: inputs });
-		setNodeData(node.id, { inputs });
+		setNodeData(node.id, { inputs, inputData });
 	}, [inputs]);
 
 	// update data when data sources change
@@ -42,13 +43,17 @@ const InputNode = (node: Node, data: NodeData) => {
 
 			if(edgeDataSet != undefined) {
 				const column: string = e.sourceHandle!;
-				return edgeDataSet.data.map(d => parseFloat(d[column]));
+				return edgeDataSet.data.map(d => {
+					let val = parseFloat(d[column]);
+					return isNaN(val) ? 0 : val;
+				});
 			}
 
 			return [];
 		});
 
-		console.log(data);
+		setInputData(data);
+		setNodeData(node.id, { inputs, inputData: data });
 	}, [edges]);
 
 	return (

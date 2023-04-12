@@ -40,7 +40,7 @@ export type GraphState = {
     setLayerDef: (nodeName: string, layer: any) => void;
     setDataSet: (nodeId: string, data: DataSet | undefined) => void;
     getDataSet: (nodeId: string) => DataSet | undefined;
-    createMLGraph: () => any[] | undefined;
+    createMLGraph: () => GraphEnv | undefined;
     clearGraph: () => void;
     getGraphJson: () => any;
     loadGraphJson: (data: any) => void;
@@ -55,6 +55,12 @@ export type DataSet = {
     fileName: string;
     cols: string[];
     data: any[];
+}
+
+export type GraphEnv = {
+    data: number[][];
+    labels: number[];
+    graph: any[];
 }
 
 const useGraph = create<GraphState>((set, get) => ({
@@ -219,7 +225,11 @@ const useGraph = create<GraphState>((set, get) => ({
         set({ errors });
 
         if(graphStack.length > 2 && graphStack[graphStack.length - 1].type == "outputNode") {
-            return graphStack.map(n => get().layerDefs.get(n.id));
+            return {
+                data: inputNode!.data.inputData,
+                labels: outputNode!.data.outputData,
+                graph: graphStack.map(n => get().layerDefs.get(n.id))
+            };
         }
 
         return undefined;
