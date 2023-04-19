@@ -171,12 +171,20 @@ const useGraph = create<GraphState>((set, get) => ({
         // check for multiple inputs or outputs
         if(get().nodes.filter(n => n.type == "inputNode").length > 1) {
             errors.push({type: "error", msg: "Cannot have more than one input node."});
-            set({ errors });
+            valid = false;
         }
 
         if(get().nodes.filter(n => n.type == "outputNode").length > 1) {
             errors.push({type: "error", msg: "Cannot have more than one output node."});
-            set({ errors });
+            valid = false;
+        }
+
+        // check that data is given to input
+        if(inputNode != undefined) {
+            if(get().edges.filter(e => e.target == inputNode.id).length < inputNode.data.inputs) {
+                errors.push({type: "error", msg: "Input Layer is missing data input(s)"});
+                valid = false;
+            }
         }
 
         if(valid == false) {
@@ -202,6 +210,16 @@ const useGraph = create<GraphState>((set, get) => ({
             // graph is complete
             if(nextNode.type == "outputNode") {
                 connection = undefined;
+
+                // check that output has data given to it
+                if(outputNode != undefined) {
+                    if(get().edges.filter(e => e.target == outputNode.id).length != 2) {
+                        errors.push({type: "error", msg: "Output Layer is missing prediction data"});
+                        set({ errors });
+                        return undefined;
+                    }
+                }
+
                 continue;
             }
 
