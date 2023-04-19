@@ -81,21 +81,28 @@ const useGraph = create<GraphState>((set, get) => ({
         });
     },
     onConnect: (connection: Connection) => {
-        set({
-            edges: addEdge(connection, get().edges.filter(e => !(e.target == connection.target && e.targetHandle == connection.targetHandle) &&
-                                                               !(e.source == connection.source && e.sourceHandle == connection.sourceHandle))),
-        });
-
-        // run to test for errors
-        get().createMLGraph();
+        // check that the type of input and output match
+        if(connection.sourceHandle?.charAt(0) == connection.targetHandle?.charAt(0)) {
+            set({
+                edges: addEdge(connection, get().edges.filter(e => !(e.target == connection.target && e.targetHandle == connection.targetHandle) &&
+                                                                   !(e.source == connection.source && e.sourceHandle == connection.sourceHandle))),
+            });
+    
+            // run to test for errors
+            get().createMLGraph();
+        }
     },
     updateEdge: (oldEdge: Edge, newConnection: Connection) => {
-        set({
-            edges: updateEdge(oldEdge, newConnection, get().edges)
-        });
+        // check that the type of input and output match
+        if(newConnection.sourceHandle?.charAt(0) == newConnection.targetHandle?.charAt(0)) {
+            set({
+                edges: updateEdge(oldEdge, newConnection, get().edges.filter(e => e.id == oldEdge.id! || (!(e.target == newConnection.target && e.targetHandle == newConnection.targetHandle) &&
+                                                                                    !(e.source == newConnection.source && e.sourceHandle == newConnection.sourceHandle))))
+            });
 
-        // run to test for errors
-        get().createMLGraph();
+            // run to test for errors
+            get().createMLGraph();
+        }
     },
     deleteEdge: (edge: Edge) => {
         set({

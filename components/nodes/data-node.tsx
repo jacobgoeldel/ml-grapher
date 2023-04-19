@@ -56,7 +56,7 @@ const DataNode = (node: Node, data: NodeData) => {
 
             <>
                 {dataSet && dataSet.cols.map((c: any, i: number) => (
-                    <Handle type="source" position={Position.Right} style={{ ...handleStyle, top: 230 + i * 40, backgroundColor: "var(--chakra-colors-green-700)" }} key={i} id={c} />
+                    <Handle type="source" position={Position.Right} style={{ ...handleStyle, top: 230 + i * 40, backgroundColor: "var(--chakra-colors-green-700)" }} key={i} id={`d_${c}`} />
                 ))
                 }
             </>

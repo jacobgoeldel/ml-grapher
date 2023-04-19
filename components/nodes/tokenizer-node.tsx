@@ -26,12 +26,12 @@ const TokenizerNode = (node: Node, data: NodeData) => {
 
             if(newEdge != undefined) {
                 const prevData = getDataSet(newEdge.source);
-                const newColname: string = newEdge.sourceHandle!;
+                const newColname: string = newEdge.sourceHandle!.substring(2);
 
                 // get every possible value
                 let newTokens = new Map<string, number>();
                 prevData!.data.forEach(d => {
-                    newTokens.set(d[newEdge.sourceHandle!], 0);
+                    newTokens.set(d[newColname], 0);
                 });
 
                 // assign each unique value a token
@@ -47,7 +47,7 @@ const TokenizerNode = (node: Node, data: NodeData) => {
                     cols: ["tokenizedData"],
                     data: prevData!.data.map((val) => {
                         return {
-                            "tokenizedData": newTokens.get(val[newEdge.sourceHandle!])
+                            "tokenizedData": newTokens.get(val[newColname])
                         }
                     })
                 }
@@ -74,11 +74,12 @@ const TokenizerNode = (node: Node, data: NodeData) => {
                 position={Position.Right} 
                 style={{ ...handleStyle, top: 70, backgroundColor: "var(--chakra-colors-green-700)" }} 
                 key={0}
-                id="tokenizedData"
+                id="d_tokenizedData"
             />
             
             <Handle 
                 type="target" 
+                id="d_input"
                 position={Position.Left} 
                 style={{ ...handleStyle, top: 70, backgroundColor: "var(--chakra-colors-green-700)" }} 
                 key={1} 
