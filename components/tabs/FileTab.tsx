@@ -4,12 +4,33 @@ import { FC, useRef } from "react";
 import { TbFileImport, TbFileExport, TbFile } from 'react-icons/tb';
 import useGraph from "../store";
 
+// helper functions for saving and loading, as json stringify/parse don't support maps by default
+export const GraphReplacer = (key: string, value: any) => {
+    if (value instanceof Map) {
+        return {
+            dataType: 'Map',
+            value: Array.from(value.entries()),
+        };
+    } else {
+        return value;
+    }
+}
+
+export const GraphReviver = (key: string, value: any) => {
+    if (typeof value === 'object' && value !== null) {
+        if (value.dataType === 'Map') {
+            return new Map(value.value);
+        }
+    }
+    return value;
+}
+
 const FileTab: FC<{}> = () => {
     const { isOpen: isNewModalOpen, onOpen: onNewModalOpen, onClose: onNewModalClose } = useDisclosure();
 
-    const { clearGraph, graphName, setGraphName, getGraphJson, loadGraphJson } = useGraph((state) => ({ 
-        clearGraph: state.clearGraph, 
-        graphName: state.graphName, 
+    const { clearGraph, graphName, setGraphName, getGraphJson, loadGraphJson } = useGraph((state) => ({
+        clearGraph: state.clearGraph,
+        graphName: state.graphName,
         setGraphName: state.setGraphName,
         getGraphJson: state.getGraphJson,
         loadGraphJson: state.loadGraphJson
@@ -23,7 +44,8 @@ const FileTab: FC<{}> = () => {
     const changeGraphname = (evt: any) => setGraphName(evt.target.value);
 
     const saveGraph = () => {
-        exportFromJSON({ data: getGraphJson(), fileName: graphName, exportType: "json", extension: "mlgraph" });
+        const data = JSON.stringify(getGraphJson(), GraphReplacer);
+        exportFromJSON({ data, fileName: graphName, exportType: "txt", extension: "mlgraph" });
     }
 
     const loadRef = useRef<HTMLInputElement>(null);
@@ -34,9 +56,9 @@ const FileTab: FC<{}> = () => {
         const files = e.target.files;
         if (files) {
             var fileReader = new FileReader();
-            fileReader.onload = function(e: any) {
+            fileReader.onload = function (e: any) {
                 // load to graph state
-                loadGraphJson(JSON.parse(e.target.result));
+                loadGraphJson(JSON.parse(e.target.result, GraphReviver));
             };
             fileReader.readAsText(files[0]);
         } else {

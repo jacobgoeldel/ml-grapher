@@ -254,7 +254,6 @@ const useGraph = create<GraphState>((set, get) => ({
         }
     },
     loadGraphJson: (data: any) => {
-        console.log(data);
         set({
             nodes: data.nodes,
             edges: data.edges,
