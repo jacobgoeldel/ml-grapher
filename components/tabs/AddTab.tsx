@@ -16,6 +16,7 @@ const AddTab: FC<{}> = () => {
                     <Text fontSize='xl' color="white" h="min">Data Nodes</Text>
                     <Button colorScheme="green" onDragStart={(event) => onDragStart(event, 'dataNode')} draggable width="full">Data Upload</Button>
                     <Button colorScheme="green" onDragStart={(event) => onDragStart(event, 'tokenizerNode')} draggable width="full">Data Tokenizer</Button>
+                    <Button colorScheme="green" onDragStart={(event) => onDragStart(event, 'normalizerNode')} draggable width="full">Data Normalizer</Button>
                 </VStack>
 
                 <VStack w="full" spacing={4} alignItems="start">
