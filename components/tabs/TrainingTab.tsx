@@ -23,9 +23,10 @@ const setIntervalX = (callback, delay, repetitions, done) => {
 }
 
 const TrainingTab: FC<{}> = () => {
-    const { errors, createMLGraph } = useGraph((state) => ({
+    const { errors, createMLGraph, edges } = useGraph((state) => ({
         errors: state.errors,
-        createMLGraph: state.createMLGraph
+        createMLGraph: state.createMLGraph,
+        edges: state.edges
     }));
 
     const [method, setMethod] = useState("adadelta");
@@ -152,6 +153,17 @@ const TrainingTab: FC<{}> = () => {
         setTrainerInterv(undefined);
         setTraining(false);
     }
+
+    useEffect(() => {
+        // if the structure of the graph changes, stop training and invalidate any previous training
+        stopTraining();
+        clearTraining();
+        
+        // clean up and stop training if we switch tabs
+        return () => {
+            stopTraining();
+        }
+    }, [edges]);
 
     return (
         <LightMode>
