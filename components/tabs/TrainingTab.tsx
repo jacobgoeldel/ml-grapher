@@ -23,9 +23,10 @@ const setIntervalX = (callback, delay, repetitions, done) => {
 }
 
 const TrainingTab: FC<{}> = () => {
-    const { errors, createMLGraph } = useGraph((state) => ({
+    const { errors, createMLGraph, edges } = useGraph((state) => ({
         errors: state.errors,
-        createMLGraph: state.createMLGraph
+        createMLGraph: state.createMLGraph,
+        edges: state.edges
     }));
 
     const [method, setMethod] = useState("adadelta");
@@ -33,7 +34,6 @@ const TrainingTab: FC<{}> = () => {
     const [decay, setDecay] = useState(0.001);
     const [batchSize, setBatchSize] = useState(32);
     const [epochs, setEpochs] = useState(10);
-    const [trainingSplit, setTrainingSplit] = useState(75);
 
     const [trainer, setTrainer] = useState<any | undefined>();
     const [data, setData] = useState<any | undefined>();
@@ -73,7 +73,6 @@ const TrainingTab: FC<{}> = () => {
         const avgloss = totalLoss / data[0].length;
 
         if (avgloss != Infinity) {
-            console.log(avgloss);
             setLoss(prevLoss => avgloss);
             setLossGraph(prev => [...prev, { epoch: prev.length + 1, loss: avgloss }])
         }
@@ -83,9 +82,6 @@ const TrainingTab: FC<{}> = () => {
 
     const startTraining = () => {
         let { graph, data, labels } = createMLGraph()!;
-        console.log("Network", graph);
-        console.log(data);
-        console.log(labels);
 
         // shouldn't be possible but just in case
         if (graph == undefined)
@@ -99,7 +95,7 @@ const TrainingTab: FC<{}> = () => {
             batch_size: batchSize,
         };
 
-        console.log("Trainer", trainerConfig);
+        console.log("Training Setup", {"Graph": graph, "Data": data, "Labels": labels, "Trainer Config": trainerConfig });
 
         // create a net
         let net = new Net();
@@ -153,6 +149,17 @@ const TrainingTab: FC<{}> = () => {
         setTraining(false);
     }
 
+    useEffect(() => {
+        // if the structure of the graph changes, stop training and invalidate any previous training
+        stopTraining();
+        clearTraining();
+        
+        // clean up and stop training if we switch tabs
+        return () => {
+            stopTraining();
+        }
+    }, [edges]);
+
     return (
         <LightMode>
             <VStack h="full" w="500px" backgroundColor="gray.800" p={8} spacing={12} dropShadow="lg" alignItems="start">
@@ -202,6 +209,19 @@ const TrainingTab: FC<{}> = () => {
                         <Text color="white" flex={1}>Epochs:</Text>
                         <DarkMode>
                             <NumberInput max={1000} min={1} value={epochs} onChange={(text, val) => setEpochs(val)} color="white" flex={1}>
+                                <NumberInputField backgroundColor="gray.900" />
+                                <NumberInputStepper>
+                                    <NumberIncrementStepper />
+                                    <NumberDecrementStepper />
+                                </NumberInputStepper>
+                            </NumberInput>
+                        </DarkMode>
+                    </Flex>
+
+                    <Flex alignItems="center" justifyContent="space-between" width="full">
+                        <Text color="white" flex={1}>Batch Size:</Text>
+                        <DarkMode>
+                            <NumberInput max={1024} min={1} value={batchSize} onChange={(text, val) => setBatchSize(val)} color="white" flex={1}>
                                 <NumberInputField backgroundColor="gray.900" />
                                 <NumberInputStepper>
                                     <NumberIncrementStepper />

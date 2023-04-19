@@ -12,10 +12,10 @@ const DenseNode = (node: Node) => {
         setNodeData: state.setNodeData
     }));
 
-    const [num_neurons, setNeurons] = useState(node.data.neurons || 8);
+    const [num_neurons, setNeurons] = useState<number | undefined>(node.data.neurons || 8);
     const [activation, setActivation] = useState(node.data.activation || "relu");
 
-    const onNeuronsChanged = (_: string, val: number) => setNeurons(val);
+    const onNeuronsChanged = (_: string, val: number | undefined) => setNeurons(val);
     const onActivationChanged = (evt: any) => setActivation(evt.target.value);
 
     const updateData = () => setNodeData(node.id, {
@@ -35,7 +35,7 @@ const DenseNode = (node: Node) => {
 
             <FormControl>
                 <FormLabel color="white">Neurons</FormLabel>
-                <NumberInput max={64} min={2} value={num_neurons} onChange={onNeuronsChanged} color="white">
+                <NumberInput max={64} min={2} value={isNaN(num_neurons) ? "" : num_neurons} onChange={onNeuronsChanged} color="white">
                     <NumberInputField backgroundColor="gray.800" />
                     <NumberInputStepper>
                         <NumberIncrementStepper />

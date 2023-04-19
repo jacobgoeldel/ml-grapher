@@ -11,6 +11,7 @@ import { v4 as uuidv4 } from 'uuid';
 import useGraph, { GraphState } from './store';
 import TokenizerNode from './nodes/tokenizer-node';
 import NormalizerNode from './nodes/normalizer-node';
+import OneHotNode from './nodes/one-hot-node';
 
 
 const nodeTypes: any = { 
@@ -21,6 +22,7 @@ const nodeTypes: any = {
     commentNode: CommentNode,
     tokenizerNode: TokenizerNode,
     normalizerNode: NormalizerNode,
+    onehotNode: OneHotNode,
  };
 
 const selector = (state: GraphState) => ({
