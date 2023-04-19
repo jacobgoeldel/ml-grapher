@@ -67,7 +67,7 @@ const InputNode = (node: Node, data: NodeData) => {
 
 			<FormControl>
 				<FormLabel color="white">Inputs</FormLabel>
-				<NumberInput max={16} min={1} value={inputs} onChange={inputsChanged} color="white">
+				<NumberInput max={16} min={1} value={isNaN(inputs) ? "" : inputs} onChange={inputsChanged} color="white">
 					<NumberInputField backgroundColor="gray.800" />
 					<NumberInputStepper>
 						<NumberIncrementStepper />
