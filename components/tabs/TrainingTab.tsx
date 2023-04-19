@@ -1,4 +1,4 @@
-import { Alert, AlertDescription, AlertIcon, AlertTitle, Box, Button, DarkMode, Flex, LightMode, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Select, Slider, SliderFilledTrack, SliderMark, SliderThumb, SliderTrack, Text, Tooltip, VStack } from "@chakra-ui/react";
+import { Alert, AlertDescription, AlertIcon, AlertTitle, Box, Button, DarkMode, Flex, LightMode, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Select, Slider, SliderFilledTrack, SliderMark, SliderThumb, SliderTrack, Text, Tooltip, VStack, useDisclosure } from "@chakra-ui/react";
 import { FC, useEffect, useState } from "react";
 import useGraph from "../store";
 import { Trainer, Vol, Net } from "convnetjs";
@@ -42,6 +42,8 @@ const TrainingTab: FC<{}> = () => {
     const [training, setTraining] = useState(false);
     const [loss, setLoss] = useState<number | undefined>();
     const [lossGraph, setLossGraph] = useState<any[]>([]);
+
+    const { isOpen: isClearModalOpen, onOpen: onClearModalOpen, onClose: onClearModalClose } = useDisclosure();
 
     const hasErrors = errors.find(e => e.type == "error") != undefined;
 
@@ -142,6 +144,7 @@ const TrainingTab: FC<{}> = () => {
         setLossGraph([]);
         setLoss(undefined);
         setTrainer(undefined);
+        onClearModalClose();
     }
 
     const stopTraining = () => {
@@ -195,19 +198,6 @@ const TrainingTab: FC<{}> = () => {
                         </DarkMode>
                     </Flex>
 
-                    {/* <Flex alignItems="center" justifyContent="space-between" width="full">
-                        <Text color="white" flex={1}>Batch Size:</Text>
-                        <DarkMode>
-                            <NumberInput max={1024} min={1} value={batchSize} onChange={(text, val) => setBatchSize(val)} color="white" flex={1}>
-                                <NumberInputField backgroundColor="gray.900" />
-                                <NumberInputStepper>
-                                    <NumberIncrementStepper />
-                                    <NumberDecrementStepper />
-                                </NumberInputStepper>
-                            </NumberInput>
-                        </DarkMode>
-                    </Flex> */}
-
                     <Flex alignItems="center" justifyContent="space-between" width="full">
                         <Text color="white" flex={1}>Epochs:</Text>
                         <DarkMode>
@@ -220,38 +210,6 @@ const TrainingTab: FC<{}> = () => {
                             </NumberInput>
                         </DarkMode>
                     </Flex>
-
-                    {/* <Flex alignItems="center" justifyContent="space-between" width="full" pt={8}>
-                        <Text color="white" flex={1}>Training Split:</Text>
-                        <DarkMode>
-                            <Box pt={6} pb={2} flex={2}>
-                                <Slider aria-label='training-split' value={trainingSplit} onChange={(val) => setTrainingSplit(clamp(val, 10, 90))}>
-                                    <SliderMark value={0} style={labelStyles} color="white" width="full">
-                                        Training
-                                    </SliderMark>
-                                    <SliderMark value={70} style={labelStyles} color="white">
-                                        Validation
-                                    </SliderMark>
-                                    <SliderMark
-                                        value={trainingSplit}
-                                        textAlign='center'
-                                        bg='gray.900'
-                                        rounded="sm"
-                                        color='white'
-                                        mt='-10'
-                                        ml='-5'
-                                        w='12'
-                                    >
-                                        {trainingSplit}%
-                                    </SliderMark>
-                                    <SliderTrack backgroundColor="orange.500">
-                                        <SliderFilledTrack backgroundColor="green.500" />
-                                    </SliderTrack>
-                                    <SliderThumb />
-                                </Slider>
-                            </Box>
-                        </DarkMode>
-                    </Flex> */}
                 </VStack>
 
                 <VStack w="full" spacing={4} alignItems="start">
@@ -286,11 +244,33 @@ const TrainingTab: FC<{}> = () => {
                             <Button colorScheme="green" width="full" isDisabled={hasErrors} onClick={startTraining}>Start Training</Button> :
                             <>
                                 <Button colorScheme="green" width="full" isDisabled={hasErrors} onClick={resumeTraining}>Resume Training</Button>
-                                <Button colorScheme="red" width="full" isDisabled={hasErrors} onClick={clearTraining}>Clear Training</Button>
+                                <Button colorScheme="red" width="full" isDisabled={hasErrors} onClick={onClearModalOpen}>Clear Training</Button>
                             </>
                         )}
                 </VStack>
             </VStack>
+
+            <DarkMode>
+                <Modal isOpen={isClearModalOpen} onClose={onClearModalClose} isCentered>
+                    <ModalOverlay />
+                    <ModalContent>
+                        <ModalHeader color="white">Confirm</ModalHeader>
+                        <ModalCloseButton />
+                        <ModalBody color="white">
+                            Are you sure you want to clear all previous training?
+                        </ModalBody>
+
+                        <ModalFooter>
+                            <LightMode>
+                                <Button colorScheme="red" mr={2} onClick={clearTraining}>Ok</Button>
+                                <Button colorScheme='blue' mr={3} onClick={onClearModalClose}>
+                                    Cancel
+                                </Button>
+                            </LightMode>
+                        </ModalFooter>
+                    </ModalContent>
+                </Modal>
+            </DarkMode>
         </LightMode>
     )
 }
