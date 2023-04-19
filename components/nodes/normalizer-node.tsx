@@ -40,14 +40,14 @@ const NormalizerNode = (node: Node, data: NodeData) => {
                         newMin = val;
                 });
                 
-                // build dataset
+                // build dataset, scaling between -1 and 1
                 const range = newMax! - newMin!;
                 const newData: DataSet = {
                     fileName: "Normalizer",
                     cols: ["normalizedData"],
                     data: prevData!.data.map((val) => {
                         return {
-                            "normalizedData": (parseFloat(val[newColname]) - newMin!) / range,
+                            "normalizedData": (((parseFloat(val[newColname]) - newMin!) / range) * 2) - 1,
                         }
                     })
                 }
