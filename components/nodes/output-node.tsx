@@ -20,7 +20,6 @@ const OutputNode = (node: Node, data: NodeData) => {
     }));
 
     const onTypeChanged = (evt: any) => setOutputType(evt.target.value);
-    const onClassesChanged = (_: string, val: number) => setClasses(val);
     const onActivationChanged = (evt: any) => setActivation(evt.target.value);
 
     // update data when data sources change
@@ -31,20 +30,24 @@ const OutputNode = (node: Node, data: NodeData) => {
 
 		if(edge != undefined) {
 			const edgeDataSet = getDataSet(edge.source);
-
+            
 			if(edgeDataSet != undefined) {
+                // get every possible value and map of all possible values (for # of classes)
 				const column: string = edge.sourceHandle!;
+                let uniqueVals = new Map<number, number>();
 				let data: number[] | number[][] = edgeDataSet.data.map(d => {
                     let val = parseFloat(d[column]);
+                    uniqueVals.set(d[column], 0);
                     return isNaN(val) ? 0 : val;
                 });
 
                 if(outputType == "Regression") {
                     data = data.map(d => [d]);
                 }
-
+                
                 setOutputData(data);
-		        setNodeData(node.id, { outputType, classes, activation, outputData: data });
+                setClasses(uniqueVals.size);
+		        setNodeData(node.id, { outputType, classes: uniqueVals.size, activation, outputData: data });
 			}
         } else {
             setOutputData([]);
@@ -56,12 +59,12 @@ const OutputNode = (node: Node, data: NodeData) => {
     useEffect(() => {
         setLayerDef(node.id, outputType == "Classifier" ? { type: activation, num_classes: classes } : { type:'regression', num_neurons: 1 });
         setNodeData(node.id, { outputType, classes, activation, outputData });
-    }, [outputType, classes, activation]);
+    }, [outputType, activation]);
 
     return (
         <DefaultNode node={node} data={data} title="Output Layer" titleColor="red.500">
             <Handle type="target" position={Position.Left} id="layer" style={{ ...handleStyle, top: "128px", backgroundColor: "var(--chakra-colors-red-700)" }} />
-            <Handle type="target" position={Position.Left} id="data" style={{ ...handleStyle, top: "342px", backgroundColor: "var(--chakra-colors-green-700)" }} />
+            <Handle type="target" position={Position.Left} id="data" style={{ ...handleStyle, top: "260px", backgroundColor: "var(--chakra-colors-green-700)" }} />
 
             <FormControl mt={4} mb={2}>
                 <FormLabel color="white">Activation Function</FormLabel>
@@ -69,17 +72,6 @@ const OutputNode = (node: Node, data: NodeData) => {
                     <option>Classifier</option>
                     <option>Regression</option>
                 </Select>
-            </FormControl>
-
-            <FormControl isDisabled={outputType != "Classifier"}>
-                <FormLabel color="white">Classes</FormLabel>
-                <NumberInput max={64} min={2} value={classes} onChange={onClassesChanged} color="white">
-                    <NumberInputField backgroundColor="gray.800" />
-                    <NumberInputStepper>
-                        <NumberIncrementStepper />
-                        <NumberDecrementStepper />
-                    </NumberInputStepper>
-                </NumberInput>
             </FormControl>
 
             <FormControl mt={4} mb={2} isDisabled={outputType != "Classifier"}>
