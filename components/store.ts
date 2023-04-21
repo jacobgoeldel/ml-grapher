@@ -28,6 +28,7 @@ export type GraphState = {
     dataSets: Map<string, DataSet | undefined>;
     errors: ErrorMessage[];
     graphName: string;
+    graphNet: any | undefined;
     onNodesChange: OnNodesChange;
     onEdgesChange: OnEdgesChange;
     onConnect: OnConnect;
@@ -37,6 +38,7 @@ export type GraphState = {
     deleteNode: (id: string) => void;
     setNodeData: (id: string, data: any) => void;
     setGraphName: (name: string) => void;
+    setGraphNet: (graphNet: any | undefined) => void;
     setLayerDef: (nodeName: string, layer: any) => void;
     setDataSet: (nodeId: string, data: DataSet | undefined) => void;
     getDataSet: (nodeId: string) => DataSet | undefined;
@@ -69,7 +71,9 @@ const useGraph = create<GraphState>((set, get) => ({
     layerDefs: new Map(),
     dataSets: new Map(),
     graphName: "",
+    graphNet: undefined,
     errors: [],
+
     onNodesChange: (changes: NodeChange[]) => {
         set({
             nodes: applyNodeChanges(changes, get().nodes),
@@ -145,6 +149,11 @@ const useGraph = create<GraphState>((set, get) => ({
     setGraphName: (name) => {
         set({
             graphName: name
+        });
+    },
+    setGraphNet: (graphNet) => {
+        set({
+            graphNet,
         });
     },
     setLayerDef: (nodeName: string, layer: any) => {

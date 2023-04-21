@@ -1,4 +1,4 @@
-import { Button, LightMode, Text, VStack, Icon, useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Flex, DarkMode, Input } from "@chakra-ui/react";
+import { Button, LightMode, Text, VStack, Icon, useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Flex, DarkMode, Input, Box } from "@chakra-ui/react";
 import exportFromJSON from "export-from-json";
 import { FC, useRef } from "react";
 import { TbFileImport, TbFileExport, TbFile } from 'react-icons/tb';
@@ -25,7 +25,7 @@ export const GraphReviver = (key: string, value: any) => {
     return value;
 }
 
-const FileTab: FC<{}> = () => {
+const FileTab: FC<{ visible: boolean }> = ({ visible }) => {
     const { isOpen: isNewModalOpen, onOpen: onNewModalOpen, onClose: onNewModalClose } = useDisclosure();
 
     const { clearGraph, graphName, setGraphName, getGraphJson, loadGraphJson } = useGraph((state) => ({
@@ -67,7 +67,7 @@ const FileTab: FC<{}> = () => {
     }
 
     return (
-        <>
+        <Box hidden={!visible} h="full">
             <LightMode>
                 <VStack h="full" w="400px" backgroundColor="gray.800" p={8} spacing={12} dropShadow="lg" alignItems="start">
                     <Text fontSize='4xl' color="white" h="min">Files</Text>
@@ -114,7 +114,7 @@ const FileTab: FC<{}> = () => {
                     </ModalFooter>
                 </ModalContent>
             </Modal>
-        </>
+        </Box>
     )
 }
 

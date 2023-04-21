@@ -39,9 +39,9 @@ const SideBar: FC<{}> = () => {
                 />
             </VStack>
 
-            {selectedId == 0 && <FileTab />}
-            {selectedId == 1 && <AddTab />}
-            {selectedId == 2 && <TrainingTab />}
+            <FileTab visible={selectedId == 0} />
+            <AddTab visible={selectedId == 1} />
+            <TrainingTab visible={selectedId == 2} />
         </HStack>
     )
 }
