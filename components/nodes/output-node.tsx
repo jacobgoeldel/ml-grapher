@@ -26,7 +26,7 @@ const OutputNode = (node: Node, data: NodeData) => {
 	useEffect(() => {
 		// TODO: check if the edges changed are for the input node before reloading data
 
-		const edge = edges.find(e => e.target == node.id && e.targetHandle == "data");
+		const edge = edges.find(e => e.target == node.id && e.targetHandle == "d_data");
 
 		if(edge != undefined) {
 			const edgeDataSet = getDataSet(edge.source);

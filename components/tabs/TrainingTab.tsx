@@ -157,12 +157,14 @@ const TrainingTab: FC<{ visible: boolean }> = ({ visible }) => {
     useEffect(() => {
         stopTraining();
         clearTraining();
-        
-        // clean up and stop training if we switch tabs
-        return () => {
+    }, [edges]);
+    
+    // clean up and stop training if we switch tabs
+    useEffect(() => {
+        if(!visible && training) {
             stopTraining();
         }
-    }, [edges]);
+    }, [visible]);
 
     return (
         <Box hidden={!visible} h="full">

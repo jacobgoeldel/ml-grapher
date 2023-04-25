@@ -42,7 +42,7 @@ const InputNode = (node: Node, data: NodeData) => {
 			const edgeDataSet = getDataSet(e.source);
 
 			if(edgeDataSet != undefined) {
-				const column: string = e.sourceHandle!;
+				const column: string = e.sourceHandle!.substring(2);
 				return edgeDataSet.data.map(d => {
 					let val = parseFloat(d[column]);
 					return isNaN(val) ? 0 : val;
