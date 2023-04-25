@@ -2,23 +2,7 @@ import { addEdge, applyEdgeChanges, applyNodeChanges, Connection, Edge, EdgeChan
 import { create } from "zustand";
 import { NodeData } from "./nodes/base-node";
 
-const initialNodes: Node<any>[] = [
-    {
-        id: 'preset0',
-        position: { x: 100, y: 100 },
-        data: {},
-        dragHandle: '.custom-drag-handle',
-        type: 'denseNode'
-    },
-    {
-        id: 'preset1',
-        position: { x: 400, y: 100 },
-        data: {},
-        dragHandle: '.custom-drag-handle',
-        type: 'denseNode'
-    },
-];
-
+const initialNodes: Node<any>[] = [];
 const initialEdges: Edge<any>[] = [];
 
 export type GraphState = {
