@@ -6,7 +6,7 @@ import DefaultNode, { NodeData } from "./base-node"
 import ResizeTextarea from "react-textarea-autosize";
 import { forwardRef } from "react";
 
-export const AutoResizeTextarea = forwardRef((props, ref) => {
+const AutoResizeTextarea = forwardRef((props, ref) => {
   return (
     <Textarea
       minH="unset"
@@ -20,6 +20,8 @@ export const AutoResizeTextarea = forwardRef((props, ref) => {
     />
   );
 });
+AutoResizeTextarea.displayName = "TextAreaAutoSizing";
+
 
 export const CommentNode = (node: Node) => {
     const [text, setText] = useState(node.data.text || "");
