@@ -76,7 +76,7 @@ const PredictTab: FC<{ visible: boolean }> = ({ visible }) => {
                     {canPredict ?
                         <>
                             {dataEntries.map((d,i) => (
-                                <DarkMode>
+                                <DarkMode key={i}>
                                     <FormControl key={d.label}>
                                         <FormLabel color="white">
                                             {d.label}

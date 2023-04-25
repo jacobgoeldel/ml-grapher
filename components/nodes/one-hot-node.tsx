@@ -86,7 +86,7 @@ const OnHotNode = (node: Node, data: NodeData) => {
                             key={k}
                             id={`d_ohe${k}`}
                             />
-                        <Text color="white" pr={2} pb={2} align="right">"{k}"</Text>
+                        <Text color="white" pr={2} pb={2} align="right">{`"${k}"`}</Text>
                     </>
                 ))
                 

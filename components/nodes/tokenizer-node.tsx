@@ -100,9 +100,9 @@ const TokenizerNode = (node: Node, data: NodeData) => {
                         { tokens &&
                             <>
                                 {Array.from(tokens!.entries()).map(val => (
-                                    <HStack>
+                                    <HStack key={val[0]}>
                                         <Text fontWeight="bold">{val[1]}:</Text>
-                                        <Text>"{val[0]}"</Text>
+                                        <Text>{`"${val[0]}"`}</Text>
                                     </HStack>
                                 ))}
                             </>
