@@ -4,9 +4,9 @@ import { useState } from 'react';
 import useGraph from "../store";
 import DefaultNode, { NodeData } from "./base-node"
 import ResizeTextarea from "react-textarea-autosize";
-import React from "react";
+import { forwardRef } from "react";
 
-export const AutoResizeTextarea = React.forwardRef((props, ref) => {
+export const AutoResizeTextarea = forwardRef((props, ref) => {
   return (
     <Textarea
       minH="unset"
