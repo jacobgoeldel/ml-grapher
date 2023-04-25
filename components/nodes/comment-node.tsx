@@ -6,7 +6,13 @@ import DefaultNode, { NodeData } from "./base-node"
 import ResizeTextarea from "react-textarea-autosize";
 import { forwardRef } from "react";
 
-const AutoResizeTextarea = forwardRef<HTMLTextAreaElement>((props, ref) => {
+interface AutoResizeProps { 
+  value: string, 
+  onChange: (evt: any) => void, 
+  placeholder: string 
+}
+
+const AutoResizeTextarea = forwardRef<HTMLDivElement, AutoResizeProps>((props, ref) => {
   return (
     <Textarea
       minH="unset"
@@ -15,7 +21,10 @@ const AutoResizeTextarea = forwardRef<HTMLTextAreaElement>((props, ref) => {
       resize="none"
       ref={ref}
       minRows={1}
-      as={ResizeTextarea}
+      as={ResizeTextarea as any}
+      backgroundColor="gray.800" 
+      color="white" 
+      width={300}
       {...props}
     />
   );
@@ -34,7 +43,7 @@ export const CommentNode = (node: Node) => {
 
     return (
         <DefaultNode node={node} data={node.data} title="Comment" titleColor="blue.500">
-            <AutoResizeTextarea value={text} onChange={onTextChanged} placeholder='Write Your Comment Here' backgroundColor="gray.800" color="white" width={300} />
+            <AutoResizeTextarea value={text} onChange={onTextChanged} placeholder='Write Your Comment Here' />
         </DefaultNode>
     )
 }

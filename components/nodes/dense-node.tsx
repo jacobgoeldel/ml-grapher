@@ -35,7 +35,7 @@ const DenseNode = (node: Node) => {
 
             <FormControl>
                 <FormLabel color="white">Neurons</FormLabel>
-                <NumberInput max={64} min={2} value={isNaN(num_neurons) ? "" : num_neurons} onChange={onNeuronsChanged} color="white">
+                <NumberInput max={64} min={2} value={isNaN(num_neurons ?? NaN) ? "" : num_neurons} onChange={onNeuronsChanged} color="white">
                     <NumberInputField backgroundColor="gray.800" />
                     <NumberInputStepper>
                         <NumberIncrementStepper />
