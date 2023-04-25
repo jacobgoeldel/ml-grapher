@@ -7,7 +7,7 @@ import { ResponsiveContainer, LineChart, CartesianGrid, XAxis, YAxis, Legend, Li
 
 const clamp = (val: number, min: number, max: number) => val < min ? min : (val > max ? max : val);
 
-const setIntervalX = (callback, delay, repetitions, done) => {
+const setIntervalX = (callback: () => void, delay: number, repetitions: number, done: () => void) => {
     var x = 0;
     var intervalID = window.setInterval(function () {
 
@@ -22,11 +22,12 @@ const setIntervalX = (callback, delay, repetitions, done) => {
     return intervalID;
 }
 
-const TrainingTab: FC<{}> = () => {
-    const { errors, createMLGraph, edges } = useGraph((state) => ({
+const TrainingTab: FC<{ visible: boolean }> = ({ visible }) => {
+    const { errors, createMLGraph, edges, setGraphNet } = useGraph((state) => ({
         errors: state.errors,
         createMLGraph: state.createMLGraph,
-        edges: state.edges
+        edges: state.edges,
+        setGraphNet: state.setGraphNet
     }));
 
     const [method, setMethod] = useState("adadelta");
@@ -49,7 +50,7 @@ const TrainingTab: FC<{}> = () => {
 
     const methodChanged = (evt: any) => setMethod(evt.target.value);
 
-    const trainingStep = (data, labels, trainer) => {
+    const trainingStep = (data: any, labels: any, trainer: any) => {
 
         if (data == undefined || labels == undefined || trainer == undefined)
             return;
@@ -78,6 +79,7 @@ const TrainingTab: FC<{}> = () => {
         }
 
         setTrainer((val: any) => trainer);
+        setGraphNet(trainer.net.toJSON());
     }
 
     const startTraining = () => {
@@ -140,6 +142,7 @@ const TrainingTab: FC<{}> = () => {
         setLossGraph([]);
         setLoss(undefined);
         setTrainer(undefined);
+        setGraphNet(undefined);
         onClearModalClose();
     }
 
@@ -149,18 +152,22 @@ const TrainingTab: FC<{}> = () => {
         setTraining(false);
     }
 
+    
+    // if the structure of the graph changes, stop training and invalidate any previous training
     useEffect(() => {
-        // if the structure of the graph changes, stop training and invalidate any previous training
         stopTraining();
         clearTraining();
-        
-        // clean up and stop training if we switch tabs
-        return () => {
+    }, [edges]);
+    
+    // clean up and stop training if we switch tabs
+    useEffect(() => {
+        if(!visible && training) {
             stopTraining();
         }
-    }, [edges]);
+    }, [visible]);
 
     return (
+        <Box hidden={!visible} h="full">
         <LightMode>
             <VStack h="full" w="500px" backgroundColor="gray.800" p={8} spacing={12} dropShadow="lg" alignItems="start">
                 <Text fontSize='4xl' color="white" h="min">Training</Text>
@@ -292,6 +299,7 @@ const TrainingTab: FC<{}> = () => {
                 </Modal>
             </DarkMode>
         </LightMode>
+        </Box>
     )
 }
 

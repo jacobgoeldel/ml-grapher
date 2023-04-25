@@ -42,7 +42,7 @@ const InputNode = (node: Node, data: NodeData) => {
 			const edgeDataSet = getDataSet(e.source);
 
 			if(edgeDataSet != undefined) {
-				const column: string = e.sourceHandle!;
+				const column: string = e.sourceHandle!.substring(2);
 				return edgeDataSet.data.map(d => {
 					let val = parseFloat(d[column]);
 					return isNaN(val) ? 0 : val;
@@ -60,10 +60,10 @@ const InputNode = (node: Node, data: NodeData) => {
 		<DefaultNode node={node} data={data} title="Input Layer" titleColor="red.500">
 			<>
 				{targetArray.map(t => (
-					<Handle type="target" position={Position.Left} style={{ ...handleStyle, top: 158 + t * 40, backgroundColor: "var(--chakra-colors-green-700)" }} key={t} id={`target-handle-${t + 1}`} />
+					<Handle type="target" position={Position.Left} style={{ ...handleStyle, top: 158 + t * 40, backgroundColor: "var(--chakra-colors-green-700)" }} key={t} id={`d_${t + 1}`} />
 				))}
 			</>
-			<Handle type="source" position={Position.Right} style={{ ...handleStyle, top: 110, backgroundColor: "var(--chakra-colors-red-700)" }} />
+			<Handle id="n_output" type="source" position={Position.Right} style={{ ...handleStyle, top: 110, backgroundColor: "var(--chakra-colors-red-700)" }} />
 
 			<FormControl>
 				<FormLabel color="white">Inputs</FormLabel>

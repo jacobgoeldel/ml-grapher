@@ -1,9 +1,10 @@
-import { TbChartLine, TbFileDescription, TbStack2 } from 'react-icons/tb'
+import { TbAlignBoxBottomLeft, TbChartLine, TbFileDescription, TbStack2 } from 'react-icons/tb'
 import { HStack, IconButton, Icon, VStack } from "@chakra-ui/react";
 import { FC, useState } from "react";
 import AddTab from "./tabs/AddTab";
 import TrainingTab from './tabs/TrainingTab';
 import FileTab from './tabs/FileTab';
+import PredictTab from './tabs/PredictTab';
 
 const SideBar: FC<{}> = () => {
     const [selectedId, setSelectedId] = useState(-1);
@@ -37,11 +38,20 @@ const SideBar: FC<{}> = () => {
                     color={selectedId == 2 ? "white" : "gray.900"}
                     _hover={{ color: selectedId == 2 ? "white" : "gray.300" }}
                 />
+                <IconButton
+                    aria-label='Predict'
+                    variant="unstyled"
+                    icon={<Icon as={TbAlignBoxBottomLeft} w={12} h={12} />}
+                    onClick={() => tabClicked(3)}
+                    color={selectedId == 3 ? "white" : "gray.900"}
+                    _hover={{ color: selectedId == 3 ? "white" : "gray.300" }}
+                />
             </VStack>
 
-            {selectedId == 0 && <FileTab />}
-            {selectedId == 1 && <AddTab />}
-            {selectedId == 2 && <TrainingTab />}
+            <FileTab visible={selectedId == 0} />
+            <AddTab visible={selectedId == 1} />
+            <TrainingTab visible={selectedId == 2} />
+            <PredictTab visible={selectedId == 3} />
         </HStack>
     )
 }

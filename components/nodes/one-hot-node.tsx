@@ -26,7 +26,7 @@ const OnHotNode = (node: Node, data: NodeData) => {
 
             if(newEdge != undefined) {
                 const prevData = getDataSet(newEdge.source);
-                const newColname: string = newEdge.sourceHandle!;
+                const newColname: string = newEdge.sourceHandle!.substring(2);
 
                 // get every possible value
                 let newTokens = new Map<string, number>();
@@ -84,9 +84,9 @@ const OnHotNode = (node: Node, data: NodeData) => {
                             position={Position.Right} 
                             style={{ ...handleStyle, top: 70 + (i * 32), backgroundColor: "var(--chakra-colors-green-700)" }} 
                             key={k}
-                            id={`ohe${k}`}
+                            id={`d_ohe${k}`}
                             />
-                        <Text color="white" pr={2} pb={2} align="right">"{k}"</Text>
+                        <Text color="white" pr={2} pb={2} align="right">{`"${k}"`}</Text>
                     </>
                 ))
                 
@@ -97,6 +97,7 @@ const OnHotNode = (node: Node, data: NodeData) => {
                     position={Position.Left} 
                     style={{ ...handleStyle, top: 70, backgroundColor: "var(--chakra-colors-green-700)" }} 
                     key={1} 
+                    id="d_input"
                     />
             </Box>
         </DefaultNode>

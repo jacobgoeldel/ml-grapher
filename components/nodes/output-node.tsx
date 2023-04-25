@@ -26,14 +26,14 @@ const OutputNode = (node: Node, data: NodeData) => {
 	useEffect(() => {
 		// TODO: check if the edges changed are for the input node before reloading data
 
-		const edge = edges.find(e => e.target == node.id && e.targetHandle == "data");
+		const edge = edges.find(e => e.target == node.id && e.targetHandle == "d_data");
 
 		if(edge != undefined) {
 			const edgeDataSet = getDataSet(edge.source);
             
 			if(edgeDataSet != undefined) {
                 // get every possible value and map of all possible values (for # of classes)
-				const column: string = edge.sourceHandle!;
+				const column: string = edge.sourceHandle!.substring(2);
                 let uniqueVals = new Map<number, number>();
 				let data: number[] | number[][] = edgeDataSet.data.map(d => {
                     let val = parseFloat(d[column]);
@@ -63,8 +63,8 @@ const OutputNode = (node: Node, data: NodeData) => {
 
     return (
         <DefaultNode node={node} data={data} title="Output Layer" titleColor="red.500">
-            <Handle type="target" position={Position.Left} id="layer" style={{ ...handleStyle, top: "128px", backgroundColor: "var(--chakra-colors-red-700)" }} />
-            <Handle type="target" position={Position.Left} id="data" style={{ ...handleStyle, top: "260px", backgroundColor: "var(--chakra-colors-green-700)" }} />
+            <Handle type="target" position={Position.Left} id="n_layer" style={{ ...handleStyle, top: "128px", backgroundColor: "var(--chakra-colors-red-700)" }} />
+            <Handle type="target" position={Position.Left} id="d_data" style={{ ...handleStyle, top: "260px", backgroundColor: "var(--chakra-colors-green-700)" }} />
 
             <FormControl mt={4} mb={2}>
                 <FormLabel color="white">Activation Function</FormLabel>

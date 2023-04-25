@@ -1,13 +1,14 @@
-import { Button, LightMode, Text, VStack } from "@chakra-ui/react";
+import { Box, Button, LightMode, Text, VStack } from "@chakra-ui/react";
 import { FC } from "react";
 
-const AddTab: FC<{}> = () => {
+const AddTab: FC<{ visible: boolean }> = ({ visible }) => {
     const onDragStart = (event: any, nodeType: string) => {
         event.dataTransfer.setData('application/reactflow', nodeType);
         event.dataTransfer.effectAllowed = 'move';
     };
 
     return (
+        <Box hidden={!visible} h="full">
         <LightMode>
             <VStack h="full" w="400px" backgroundColor="gray.800" p={8} spacing={12} dropShadow="lg" alignItems="start">
                 <Text fontSize='4xl' color="white" h="min">Nodes</Text>
@@ -33,6 +34,7 @@ const AddTab: FC<{}> = () => {
                 </VStack>
             </VStack>
         </LightMode>
+        </Box>
     )
 }
 

@@ -26,7 +26,7 @@ const NormalizerNode = (node: Node, data: NodeData) => {
 
             if(newEdge != undefined) {
                 const prevData = getDataSet(newEdge.source);
-                const newColname: string = newEdge.sourceHandle!;
+                const newColname: string = newEdge.sourceHandle!.substring(2);
 
                 // get the max and min values
                 let newMax: number | undefined;
@@ -76,7 +76,7 @@ const NormalizerNode = (node: Node, data: NodeData) => {
                 position={Position.Right} 
                 style={{ ...handleStyle, top: 70, backgroundColor: "var(--chakra-colors-green-700)" }} 
                 key={0}
-                id="normalizedData"
+                id="d_normalizedData"
             />
             
             <Handle 
@@ -84,6 +84,7 @@ const NormalizerNode = (node: Node, data: NodeData) => {
                 position={Position.Left} 
                 style={{ ...handleStyle, top: 70, backgroundColor: "var(--chakra-colors-green-700)" }} 
                 key={1} 
+                id="d_input"
             />
 
             <Text color="white" pl={2}>Min: {min ?? ""}</Text>

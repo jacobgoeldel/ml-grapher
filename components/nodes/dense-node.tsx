@@ -30,12 +30,12 @@ const DenseNode = (node: Node) => {
 
     return (
         <DefaultNode node={node} data={node.data} title="Dense Layer" titleColor="red.500">
-            <Handle type="target" position={Position.Left} style={handleStyle} />
-            <Handle type="source" position={Position.Right} style={handleStyle} />
+            <Handle type="target" position={Position.Left} style={handleStyle} id="n_input"/>
+            <Handle type="source" position={Position.Right} style={handleStyle} id="n_output"/>
 
             <FormControl>
                 <FormLabel color="white">Neurons</FormLabel>
-                <NumberInput max={64} min={2} value={isNaN(num_neurons) ? "" : num_neurons} onChange={onNeuronsChanged} color="white">
+                <NumberInput max={64} min={2} value={isNaN(num_neurons ?? NaN) ? "" : num_neurons} onChange={onNeuronsChanged} color="white">
                     <NumberInputField backgroundColor="gray.800" />
                     <NumberInputStepper>
                         <NumberIncrementStepper />

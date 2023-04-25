@@ -28,6 +28,7 @@ export type GraphState = {
     dataSets: Map<string, DataSet | undefined>;
     errors: ErrorMessage[];
     graphName: string;
+    graphNet: any | undefined;
     onNodesChange: OnNodesChange;
     onEdgesChange: OnEdgesChange;
     onConnect: OnConnect;
@@ -37,6 +38,7 @@ export type GraphState = {
     deleteNode: (id: string) => void;
     setNodeData: (id: string, data: any) => void;
     setGraphName: (name: string) => void;
+    setGraphNet: (graphNet: any | undefined) => void;
     setLayerDef: (nodeName: string, layer: any) => void;
     setDataSet: (nodeId: string, data: DataSet | undefined) => void;
     getDataSet: (nodeId: string) => DataSet | undefined;
@@ -69,7 +71,9 @@ const useGraph = create<GraphState>((set, get) => ({
     layerDefs: new Map(),
     dataSets: new Map(),
     graphName: "",
+    graphNet: undefined,
     errors: [],
+
     onNodesChange: (changes: NodeChange[]) => {
         set({
             nodes: applyNodeChanges(changes, get().nodes),
@@ -81,21 +85,28 @@ const useGraph = create<GraphState>((set, get) => ({
         });
     },
     onConnect: (connection: Connection) => {
-        set({
-            edges: addEdge(connection, get().edges.filter(e => !(e.target == connection.target && e.targetHandle == connection.targetHandle) &&
-                                                               !(e.source == connection.source && e.sourceHandle == connection.sourceHandle))),
-        });
-
-        // run to test for errors
-        get().createMLGraph();
+        // check that the type of input and output match
+        if(connection.sourceHandle?.charAt(0) == connection.targetHandle?.charAt(0)) {
+            set({
+                edges: addEdge(connection, get().edges.filter(e => !(e.target == connection.target && e.targetHandle == connection.targetHandle) &&
+                                                                   !(e.source == connection.source && e.sourceHandle == connection.sourceHandle))),
+            });
+    
+            // run to test for errors
+            get().createMLGraph();
+        }
     },
     updateEdge: (oldEdge: Edge, newConnection: Connection) => {
-        set({
-            edges: updateEdge(oldEdge, newConnection, get().edges)
-        });
+        // check that the type of input and output match
+        if(newConnection.sourceHandle?.charAt(0) == newConnection.targetHandle?.charAt(0)) {
+            set({
+                edges: updateEdge(oldEdge, newConnection, get().edges.filter(e => e.id == oldEdge.id! || (!(e.target == newConnection.target && e.targetHandle == newConnection.targetHandle) &&
+                                                                                    !(e.source == newConnection.source && e.sourceHandle == newConnection.sourceHandle))))
+            });
 
-        // run to test for errors
-        get().createMLGraph();
+            // run to test for errors
+            get().createMLGraph();
+        }
     },
     deleteEdge: (edge: Edge) => {
         set({
@@ -140,6 +151,11 @@ const useGraph = create<GraphState>((set, get) => ({
             graphName: name
         });
     },
+    setGraphNet: (graphNet) => {
+        set({
+            graphNet,
+        });
+    },
     setLayerDef: (nodeName: string, layer: any) => {
         set({
             layerDefs: get().layerDefs.set(nodeName, layer)
@@ -171,12 +187,20 @@ const useGraph = create<GraphState>((set, get) => ({
         // check for multiple inputs or outputs
         if(get().nodes.filter(n => n.type == "inputNode").length > 1) {
             errors.push({type: "error", msg: "Cannot have more than one input node."});
-            set({ errors });
+            valid = false;
         }
 
         if(get().nodes.filter(n => n.type == "outputNode").length > 1) {
             errors.push({type: "error", msg: "Cannot have more than one output node."});
-            set({ errors });
+            valid = false;
+        }
+
+        // check that data is given to input
+        if(inputNode != undefined) {
+            if(get().edges.filter(e => e.target == inputNode.id).length < inputNode.data.inputs) {
+                errors.push({type: "error", msg: "Input Layer is missing data input(s)"});
+                valid = false;
+            }
         }
 
         if(valid == false) {
@@ -202,6 +226,16 @@ const useGraph = create<GraphState>((set, get) => ({
             // graph is complete
             if(nextNode.type == "outputNode") {
                 connection = undefined;
+
+                // check that output has data given to it
+                if(outputNode != undefined) {
+                    if(get().edges.filter(e => e.target == outputNode.id).length != 2) {
+                        errors.push({type: "error", msg: "Output Layer is missing prediction data"});
+                        set({ errors });
+                        return undefined;
+                    }
+                }
+
                 continue;
             }
 
