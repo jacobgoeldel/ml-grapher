@@ -49,7 +49,7 @@ const OnHotNode = (node: Node, data: any) => {
                     data: prevData!.data.map((val) => {
                         let output: any = {};
                         newTokenNames.forEach(t => {
-                            output[`ohe${t}`] = val[newColname] == t ? 1 : 0;
+                            output[t] = val[newColname] == t ? 1 : 0;
                         });
 
                         return output;
@@ -81,7 +81,7 @@ const OnHotNode = (node: Node, data: any) => {
                             position={Position.Right} 
                             style={{ ...handleStyle, top: 70 + (i * 32), backgroundColor: "var(--chakra-colors-green-700)" }} 
                             key={k}
-                            id={`d_ohe${k}`}
+                            id={`d_${k}`}
                             />
                         <Text color="white" pr={2} pb={2} align="right">{`"${k}"`}</Text>
                     </>
