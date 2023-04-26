@@ -17,10 +17,11 @@ const PredictTab: FC<{ visible: boolean }> = ({ visible }) => {
     const [dataEntries, setDataEntries] = useState<PredictValue[]>([]);
     const [lastPrediction, setLastPrediction] = useState<string | undefined>();
 
-    const { graphNet, edges, nodes } = useGraph((state) => ({
+    const { graphNet, edges, nodes, dataSets } = useGraph((state) => ({
         graphNet: state.graphNet,
         edges: state.edges,
-        nodes: state.nodes
+        nodes: state.nodes,
+        dataSets: state.dataSets
     }));
 
     useEffect(() => {
@@ -36,13 +37,23 @@ const PredictTab: FC<{ visible: boolean }> = ({ visible }) => {
                 const dataEdges = edges.filter(e => e.target == inputNode.id);
 
                 setDataEntries(dataEdges.map(e => {
-                    const dataNode = nodes.find(n => dataEdges.find(e => e.source == n.id) != undefined);
-                    return {
-                        label: e.sourceHandle!.slice(2),
-                        nodeType: dataNode!.type!,
-                        data: dataNode!.data,
-                        value: undefined
-                    };
+                    const dataNode = nodes.find(n => e.source == n.id);
+
+                    if(dataNode!.type == "dataNode") { // data node stores column name in the handle id
+                        return {
+                            label: e.sourceHandle!.slice(2),
+                            nodeType: dataNode!.type!,
+                            data: dataNode!.data,
+                            value: undefined
+                        };
+                    } else { // other node types store the column name in dataset.col
+                        return {
+                            label: dataSets.get(dataNode!.id)!.cols[0],
+                            nodeType: dataNode!.type!,
+                            data: dataNode!.data,
+                            value: undefined
+                        };
+                    }
                 }));
 
                 // Create the net

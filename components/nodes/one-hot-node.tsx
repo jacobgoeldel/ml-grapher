@@ -45,7 +45,7 @@ const OnHotNode = (node: Node, data: any) => {
                 // build dataset
                 const newData: DataSet = {
                     fileName: "Tokenizer",
-                    cols: ["tokenizedData"],
+                    cols: [newColname],
                     data: prevData!.data.map((val) => {
                         let output: any = {};
                         newTokenNames.forEach(t => {
