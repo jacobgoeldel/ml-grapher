@@ -7,6 +7,7 @@ ML Grapher allows you to create machine learning models from scratch with a visu
 Made Possible using the following packages:
 - **[🏠 Next.js](https://nextjs.org/):** web framework
 - **[🎨 ChakraUI](https://chakra-ui.com/):** styling and layout
+- **[📊 React Flow](https://reactflow.dev/):** visual graph
 - **[🤖 Covnet.js](https://cs.stanford.edu/people/karpathy/convnetjs/index.html):** training models
 - **[📦 Zustand](https://github.com/pmndrs/zustand):** state mangement
 
