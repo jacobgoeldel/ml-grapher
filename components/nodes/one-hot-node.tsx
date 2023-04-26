@@ -1,17 +1,16 @@
 import { Connection, Edge, Handle, Node, Position, useUpdateNodeInternals } from 'reactflow';
-import DefaultNode, { NodeData } from './base-node';
+import DefaultNode from './base-node';
 import { Box, Button, HStack, LightMode, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Text, useDisclosure } from '@chakra-ui/react';
 import useGraph, { DataSet } from '../store';
 import { useEffect, useState } from 'react';
 
 const handleStyle = { width: 12, height: 12 };
 
-const OnHotNode = (node: Node, data: NodeData) => {
+const OnHotNode = (node: Node, data: any) => {
     const [edge, setEdge] = useState<Edge | undefined>();
     const [tokens, setTokens] = useState<Map<string, number>>();
     const [tokenNames, setTokenNames] = useState<string[]>([]);
     const updateNodeInternals = useUpdateNodeInternals();
-    const { isOpen, onOpen, onClose } = useDisclosure();
 
     const { getDataSet, setDataSet, edges } = useGraph((state) => ({
         getDataSet: state.getDataSet,
@@ -56,8 +55,6 @@ const OnHotNode = (node: Node, data: NodeData) => {
                         return output;
                     })
                 }
-
-                console.log(newData);
 
                 setTokens(newTokens);
                 setTokenNames(newTokenNames);

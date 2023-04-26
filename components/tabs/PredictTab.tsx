@@ -2,6 +2,7 @@ import { Alert, AlertIcon, AlertTitle, Box, Button, DarkMode, FormControl, FormL
 import { FC, useEffect, useState } from "react";
 import useGraph from "../store";
 import { Vol, Net } from "convnetjs";
+import { Node } from "reactflow";
 
 interface PredictValue {
     label: string;
@@ -63,8 +64,43 @@ const PredictTab: FC<{ visible: boolean }> = ({ visible }) => {
         const x = new Vol(1, 1, data.length);
         data.forEach((d, i) => x.w[i] = d);
 
-        const scores = net.forward(x)
-        setLastPrediction(scores.w[0]);
+        const scores = net.forward(x);
+
+        const outputNode = nodes.find((n: any) => n.type == "outputNode");
+        
+        // get the node the label is coming from in order to reverse transformations
+        const labelEdge = edges.find(e => e.target == outputNode!.id && e.targetHandle == "d_data");
+        let labelNode: Node | undefined;
+        if(labelEdge != undefined) {
+            labelNode = nodes.find(n => n.id == labelEdge.source);
+        }
+
+        if(outputNode!.data.outputType == "Regression") {
+            let val = scores.w[0];
+
+            // if the regression value was normalized, unnormalize it
+            if(labelNode && labelNode.type == "normalizerNode") {
+                let range = labelNode.data.max - labelNode.data.min;
+                val = (range * (val + 1)) / 2 + labelNode.data.min;
+            }
+
+            setLastPrediction(val.toLocaleString(undefined, { maximumFractionDigits: 3 }));
+        } else { // Classifier
+            // get the class with the highest value
+            let result = scores.w.indexOf(Math.max(...scores.w));
+
+            if(result == -1)
+                setLastPrediction("Unknown");
+            else {
+
+                // output token instead of index if it's coming from a tokenizer
+                if(labelNode && labelNode.type == "tokenizerNode") {
+                    result = labelNode.data.tokens[result];
+                }
+
+                setLastPrediction(result);
+            }
+        }
     }
 
     return (
@@ -93,7 +129,7 @@ const PredictTab: FC<{ visible: boolean }> = ({ visible }) => {
                             ))}
                             <Button colorScheme="green" width="full" onClick={onPredict}>Predict</Button>
 
-                            {lastPrediction &&
+                            {lastPrediction != undefined &&
                                 <Text fontSize='xl' color="white">Prediction: {lastPrediction}</Text>
                             }
                         </>

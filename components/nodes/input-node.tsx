@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Handle, Node, Position, useUpdateNodeInternals } from 'reactflow';
 import { FormControl, FormLabel, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Select, Text } from '@chakra-ui/react';
-import DefaultNode, { NodeData } from './base-node';
+import DefaultNode from './base-node';
 import useGraph from '../store';
 
 const handleStyle = { width: 12, height: 12 };
 
-const InputNode = (node: Node, data: NodeData) => {
+const InputNode = (node: Node, data: any) => {
 	const [inputs, setInputs] = useState(node.data.inputs || 1);
-	const [targetArray, setTargetArray] = useState<number[]>(Array.from({ length: node.data.inputs || 0 }, (_, i) => i));
+	const [targetArray, setTargetArray] = useState<number[]>(Array.from({ length: node.data.inputs || 1 }, (_, i) => i));
 	const [inputData, setInputData] = useState<number[][]>(node.data.inputData || []);
 	const updateNodeInternals = useUpdateNodeInternals();
 
@@ -33,8 +33,6 @@ const InputNode = (node: Node, data: NodeData) => {
 
 	// update data when data sources change
 	useEffect(() => {
-		// TODO: check if the edges changed are for the input node before reloading data
-
 		const dataEdges = edges.filter(e => e.target == node.id);
 
 		// array of columns for each input data handle
