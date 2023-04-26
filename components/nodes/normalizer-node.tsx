@@ -1,12 +1,12 @@
 import { Connection, Edge, Handle, Node, Position, useUpdateNodeInternals } from 'reactflow';
-import DefaultNode, { NodeData } from './base-node';
+import DefaultNode from './base-node';
 import { Button, HStack, LightMode, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Text, useDisclosure } from '@chakra-ui/react';
 import useGraph, { DataSet } from '../store';
 import { useEffect, useState } from 'react';
 
 const handleStyle = { width: 12, height: 12 };
 
-const NormalizerNode = (node: Node, data: NodeData) => {
+const NormalizerNode = (node: Node, data: any) => {
     const [edge, setEdge] = useState<Edge | undefined>();
     const updateNodeInternals = useUpdateNodeInternals();
     const [max, setMax] = useState<number | undefined>(node.data.max);
@@ -19,6 +19,7 @@ const NormalizerNode = (node: Node, data: NodeData) => {
         edges: state.edges,
     }));
 
+    // update the dataset when edges changes
     useEffect(() => {
         const newEdge = edges.find(e => e.target == node.id);
         if(newEdge != edge) {

@@ -1,10 +1,10 @@
 import { addEdge, applyEdgeChanges, applyNodeChanges, Connection, Edge, EdgeChange, Node, NodeChange, OnConnect, OnEdgesChange, OnNodesChange, updateEdge } from "reactflow";
 import { create } from "zustand";
-import { NodeData } from "./nodes/base-node";
 
 const initialNodes: Node<any>[] = [];
 const initialEdges: Edge<any>[] = [];
 
+// stores most of the app state
 export type GraphState = {
     nodes: Node[];
     edges: Edge[];
@@ -69,7 +69,7 @@ const useGraph = create<GraphState>((set, get) => ({
         });
     },
     onConnect: (connection: Connection) => {
-        // check that the type of input and output match
+        // check that the type of input and output match data<->data or nn<->nn
         if(connection.sourceHandle?.charAt(0) == connection.targetHandle?.charAt(0)) {
             set({
                 edges: addEdge(connection, get().edges.filter(e => !(e.target == connection.target && e.targetHandle == connection.targetHandle) &&
@@ -150,7 +150,7 @@ const useGraph = create<GraphState>((set, get) => ({
     }),
     getDataSet: (nodeId) => get().dataSets.get(nodeId),
     createMLGraph: () => {
-        const graphStack: Node<NodeData>[] = [];
+        const graphStack: Node<any>[] = [];
         const inputNode = get().nodes.find(n => n.type == "inputNode");
         let errors: ErrorMessage[] = [];
 
@@ -168,12 +168,13 @@ const useGraph = create<GraphState>((set, get) => ({
             valid = false;
         }
 
-        // check for multiple inputs or outputs
+        // check for multiple inputs
         if(get().nodes.filter(n => n.type == "inputNode").length > 1) {
             errors.push({type: "error", msg: "Cannot have more than one input node."});
             valid = false;
         }
 
+        // check for multiple outputs
         if(get().nodes.filter(n => n.type == "outputNode").length > 1) {
             errors.push({type: "error", msg: "Cannot have more than one output node."});
             valid = false;
@@ -231,6 +232,7 @@ const useGraph = create<GraphState>((set, get) => ({
         if(graphStack[graphStack.length - 1].type != "outputNode") {
             errors.push({type: "error", msg: "Graph must have a path between the input and output nodes."});
         } else {
+            // warnings based on graph size
             if(graphStack.length < 4) {
                 errors.push({type: "warning", msg: "Graph is small and may not adequately train."});
             }
@@ -242,6 +244,7 @@ const useGraph = create<GraphState>((set, get) => ({
 
         set({ errors });
 
+        // one last verify for valid graphs, then return training environment
         if(graphStack.length > 2 && graphStack[graphStack.length - 1].type == "outputNode") {
             return {
                 data: inputNode!.data.inputData,

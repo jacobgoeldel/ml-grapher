@@ -86,12 +86,14 @@ const PredictTab: FC<{ visible: boolean }> = ({ visible }) => {
 
             setLastPrediction(val.toLocaleString(undefined, { maximumFractionDigits: 3 }));
         } else { // Classifier
+            // get the class with the highest value
             let result = scores.w.indexOf(Math.max(...scores.w));
 
             if(result == -1)
                 setLastPrediction("Unknown");
             else {
 
+                // output token instead of index if it's coming from a tokenizer
                 if(labelNode && labelNode.type == "tokenizerNode") {
                     result = labelNode.data.tokens[result];
                 }

@@ -1,12 +1,12 @@
 import { Handle, Node, Position } from 'reactflow';
 import { FormControl, FormLabel, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Select, Text } from '@chakra-ui/react';
-import DefaultNode, { NodeData } from './base-node';
+import DefaultNode from './base-node';
 import { useState, useEffect } from 'react';
 import useGraph from '../store';
 
 const handleStyle = { width: 12, height: 12 };
 
-const OutputNode = (node: Node, data: NodeData) => {
+const OutputNode = (node: Node, data: any) => {
     const [outputType, setOutputType] = useState(node.data.outputType || "Classifier");
     const [classes, setClasses] = useState(node.data.classes || 2);
     const [outputData, setOutputData] = useState(node.data.outputData || []);
@@ -29,8 +29,6 @@ const OutputNode = (node: Node, data: NodeData) => {
 
     // update data when data sources change
 	useEffect(() => {
-		// TODO: check if the edges changed are for the input node before reloading data
-
 		const edge = edges.find(e => e.target == node.id && e.targetHandle == "d_data");
 
 		if(edge != undefined) {

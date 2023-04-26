@@ -4,10 +4,7 @@ import { Box, HStack, IconButton, Text } from '@chakra-ui/react';
 import { CloseIcon } from '@chakra-ui/icons';
 import useGraph from '../store';
 
-export type NodeData = {
-};
-
-const DefaultNode: FC<{ node: Node, data: NodeData, title: string, titleColor: string, children: JSX.Element | JSX.Element[] }> = ({ node, title, titleColor, data, children }) => {
+const DefaultNode: FC<{ node: Node, data: any, title: string, titleColor: string, children: JSX.Element | JSX.Element[] }> = ({ node, title, titleColor, data, children }) => {
     const deleteNode = useGraph((state) => state.deleteNode);
     const onDeleteIcon = () => deleteNode(node.id);
 
