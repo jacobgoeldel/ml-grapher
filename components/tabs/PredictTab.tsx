@@ -174,7 +174,7 @@ const PredictTab: FC<{ visible: boolean }> = ({ visible }) => {
                                                     {d.label}
                                                 </FormLabel>
                                                 <Select defaultValue={0} onChange={(val) => setPredictionValue(val.currentTarget.value, i)} color="white" backgroundColor="gray.900">
-                                                    {d.data.tokens.map((t: string, i: number) => <option value={i}>{t}</option>)}
+                                                    {d.data.tokens.map((t: string, i: number) => <option value={i} key={i}>{t}</option>)}
                                                 </Select>
                                             </>
                                         }
