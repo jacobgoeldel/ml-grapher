@@ -1,21 +1,23 @@
-This is a [Next.js](https://nextjs.org/) project.
+# 🧠 ML Grapher
 
-## Getting Started
+![Demo image of the app](readme/demo.png)
 
-First, run the development server:
+ML Grapher allows you to create machine learning models from scratch with a visual graph tool right in your web browser
+
+Made Possible using the following packages:
+- **[🏠 Next.js](https://nextjs.org/):** web framework
+- **[🎨 ChakraUI](https://chakra-ui.com/):** styling and layout
+- **[🤖 Covnet.js](https://cs.stanford.edu/people/karpathy/convnetjs/index.html):** training models
+- **[📦 Zustand](https://github.com/pmndrs/zustand):** state mangement
+
+## Running Locally
+
+Running the development server:
 
 ```bash
+npm install # only need to run once
+
 npm run dev
-# or
-yarn dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
