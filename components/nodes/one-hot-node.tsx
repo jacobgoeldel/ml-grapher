@@ -11,7 +11,6 @@ const OnHotNode = (node: Node, data: NodeData) => {
     const [tokens, setTokens] = useState<Map<string, number>>();
     const [tokenNames, setTokenNames] = useState<string[]>([]);
     const updateNodeInternals = useUpdateNodeInternals();
-    const { isOpen, onOpen, onClose } = useDisclosure();
 
     const { getDataSet, setDataSet, edges } = useGraph((state) => ({
         getDataSet: state.getDataSet,

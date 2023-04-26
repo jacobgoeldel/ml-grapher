@@ -13,9 +13,10 @@ const TokenizerNode = (node: Node, data: NodeData) => {
     const updateNodeInternals = useUpdateNodeInternals();
     const { isOpen, onOpen, onClose } = useDisclosure();
 
-    const { getDataSet, setDataSet, edges } = useGraph((state) => ({
+    const { getDataSet, setDataSet, edges, setNodeData } = useGraph((state) => ({
         getDataSet: state.getDataSet,
         setDataSet: state.setDataSet,
+        setNodeData: state.setNodeData,
         edges: state.edges,
     }));
 
@@ -51,6 +52,11 @@ const TokenizerNode = (node: Node, data: NodeData) => {
                         }
                     })
                 }
+
+                // send to data, for use in prediction tokenization and construction of input select
+                setNodeData(node.id, {
+                    tokens: Array.from(newTokens.keys()),
+                });
 
                 setTokens(newTokens);
                 setTokenCount(tokenId);

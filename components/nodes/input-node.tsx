@@ -8,7 +8,7 @@ const handleStyle = { width: 12, height: 12 };
 
 const InputNode = (node: Node, data: NodeData) => {
 	const [inputs, setInputs] = useState(node.data.inputs || 1);
-	const [targetArray, setTargetArray] = useState<number[]>(Array.from({ length: node.data.inputs || 0 }, (_, i) => i));
+	const [targetArray, setTargetArray] = useState<number[]>(Array.from({ length: node.data.inputs || 1 }, (_, i) => i));
 	const [inputData, setInputData] = useState<number[][]>(node.data.inputData || []);
 	const updateNodeInternals = useUpdateNodeInternals();
 
