@@ -22,6 +22,11 @@ const OutputNode = (node: Node, data: NodeData) => {
     const onTypeChanged = (evt: any) => setOutputType(evt.target.value);
     const onActivationChanged = (evt: any) => setActivation(evt.target.value);
 
+    useEffect(() => {
+        setLayerDef(node.id, outputType == "Classifier" ? { type: activation, num_classes: classes } : { type:'regression', num_neurons: 1 });
+        setNodeData(node.id, { outputType, classes, activation, outputData });
+    }, [outputType, activation]);
+
     // update data when data sources change
 	useEffect(() => {
 		// TODO: check if the edges changed are for the input node before reloading data
@@ -50,16 +55,12 @@ const OutputNode = (node: Node, data: NodeData) => {
 		        setNodeData(node.id, { outputType, classes: uniqueVals.size, activation, outputData: data });
 			}
         } else {
+            console.log([]);
             setOutputData([]);
             setNodeData(node.id, { outputType, classes, activation, outputData: [] });
         }
 		
 	}, [edges]);
-
-    useEffect(() => {
-        setLayerDef(node.id, outputType == "Classifier" ? { type: activation, num_classes: classes } : { type:'regression', num_neurons: 1 });
-        setNodeData(node.id, { outputType, classes, activation, outputData });
-    }, [outputType, activation]);
 
     return (
         <DefaultNode node={node} data={data} title="Output Layer" titleColor="red.500">
