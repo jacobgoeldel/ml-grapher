@@ -41,11 +41,11 @@ const TokenizerNode = (node: Node, data: NodeData) => {
                     newTokens.set(key, tokenId);
                     tokenId++;
                 }
-                
+
                 // build dataset
                 const newData: DataSet = {
                     fileName: "Tokenizer",
-                    cols: ["tokenizedData"],
+                    cols: [newColname],
                     data: prevData!.data.map((val) => {
                         return {
                             "tokenizedData": newTokens.get(val[newColname])

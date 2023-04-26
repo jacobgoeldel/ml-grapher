@@ -1,15 +1,19 @@
-import { Alert, AlertIcon, AlertTitle, Box, Button, DarkMode, FormControl, FormLabel, LightMode, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Text, VStack } from "@chakra-ui/react";
+import { Alert, AlertIcon, AlertTitle, Box, Button, DarkMode, FormControl, FormLabel, LightMode, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Radio, RadioGroup, Select, Text, VStack } from "@chakra-ui/react";
 import { FC, useEffect, useState } from "react";
 import useGraph from "../store";
 import { Vol, Net } from "convnetjs";
 import { Node } from "reactflow";
 
 interface PredictValue {
+    nodeId: string;
     label: string;
     nodeType: string;
     data: any;
     value: string | undefined;
 }
+
+const normalize = (x: number, min: number, max: number) => ((x - min) / (max - min) * 2) - 1
+const denormalize = (x: number, min: number, max: number) => (max - min * (x + 1)) / 2 + min;
 
 const PredictTab: FC<{ visible: boolean }> = ({ visible }) => {
     const [canPredict, setCanPredict] = useState(false);
@@ -17,10 +21,11 @@ const PredictTab: FC<{ visible: boolean }> = ({ visible }) => {
     const [dataEntries, setDataEntries] = useState<PredictValue[]>([]);
     const [lastPrediction, setLastPrediction] = useState<string | undefined>();
 
-    const { graphNet, edges, nodes } = useGraph((state) => ({
+    const { graphNet, edges, nodes, dataSets } = useGraph((state) => ({
         graphNet: state.graphNet,
         edges: state.edges,
-        nodes: state.nodes
+        nodes: state.nodes,
+        dataSets: state.dataSets
     }));
 
     useEffect(() => {
@@ -36,13 +41,33 @@ const PredictTab: FC<{ visible: boolean }> = ({ visible }) => {
                 const dataEdges = edges.filter(e => e.target == inputNode.id);
 
                 setDataEntries(dataEdges.map(e => {
-                    const dataNode = nodes.find(n => dataEdges.find(e => e.source == n.id) != undefined);
-                    return {
-                        label: e.sourceHandle!.slice(2),
-                        nodeType: dataNode!.type!,
-                        data: dataNode!.data,
-                        value: undefined
-                    };
+                    const dataNode = nodes.find(n => e.source == n.id);
+
+                    if(dataNode!.type == "dataNode") { // data node stores column name in the handle id
+                        return {
+                            nodeId: e.source,
+                            label: e.sourceHandle!.slice(2),
+                            nodeType: dataNode!.type!,
+                            data: dataNode!.data,
+                            value: undefined
+                        };
+                    } else if(dataNode!.type == "onehotNode") {
+                        return {
+                            nodeId: e.source,
+                            label: `${dataSets.get(dataNode!.id)!.cols[0]}: ${e.sourceHandle!.slice(2)}`,
+                            nodeType: dataNode!.type!,
+                            data: dataNode!.data,
+                            value: "0"
+                        };
+                    } else { // other node types store the column name in dataset.col
+                        return {
+                            nodeId: e.source,
+                            label: dataSets.get(dataNode!.id)!.cols[0],
+                            nodeType: dataNode!.type!,
+                            data: dataNode!.data,
+                            value: undefined
+                        };
+                    }
                 }));
 
                 // Create the net
@@ -52,6 +77,21 @@ const PredictTab: FC<{ visible: boolean }> = ({ visible }) => {
             }
         }
     }, [graphNet, edges]);
+
+    const setOneHotValue = (nodeId: string, index: number) => {
+        let newEntries = dataEntries;
+
+        // reset all one hot data points from the same node to 0
+        newEntries = newEntries.map(e => ({
+            ...e,
+            value: e.nodeId === nodeId ? "0" : e.value,
+        }));
+
+        // then the one selected
+        newEntries[index].value = "1";
+
+        setDataEntries(newEntries);
+    }
 
     const setPredictionValue = (value: string | undefined, index: number) => {
         let newEntries = dataEntries;
@@ -79,10 +119,8 @@ const PredictTab: FC<{ visible: boolean }> = ({ visible }) => {
             let val = scores.w[0];
 
             // if the regression value was normalized, unnormalize it
-            if(labelNode && labelNode.type == "normalizerNode") {
-                let range = labelNode.data.max - labelNode.data.min;
-                val = (range * (val + 1)) / 2 + labelNode.data.min;
-            }
+            if(labelNode && labelNode.type == "normalizerNode")
+                val = denormalize(val, labelNode.data.min, labelNode.data.max);
 
             setLastPrediction(val.toLocaleString(undefined, { maximumFractionDigits: 3 }));
         } else { // Classifier
@@ -114,16 +152,56 @@ const PredictTab: FC<{ visible: boolean }> = ({ visible }) => {
                             {dataEntries.map((d,i) => (
                                 <DarkMode key={i}>
                                     <FormControl key={d.label}>
-                                        <FormLabel color="white">
-                                            {d.label}
-                                        </FormLabel>
-                                        <NumberInput color="white" onChange={(val) => setPredictionValue(val, i)}>
-                                            <NumberInputField backgroundColor="gray.900" />
-                                            <NumberInputStepper>
-                                                <NumberIncrementStepper />
-                                                <NumberDecrementStepper />
-                                            </NumberInputStepper>
-                                        </NumberInput>
+
+                                        {d.nodeType == "dataNode" &&
+                                            <>
+                                                <FormLabel color="white">
+                                                    {d.label}
+                                                </FormLabel>
+                                                <NumberInput color="white" onChange={(val) => setPredictionValue(val, i)}>
+                                                    <NumberInputField backgroundColor="gray.900" />
+                                                    <NumberInputStepper>
+                                                        <NumberIncrementStepper />
+                                                        <NumberDecrementStepper />
+                                                    </NumberInputStepper>
+                                                </NumberInput>
+                                            </>
+                                        }
+
+                                        {d.nodeType == "tokenizerNode" &&
+                                            <>
+                                                <FormLabel color="white">
+                                                    {d.label}
+                                                </FormLabel>
+                                                <Select defaultValue={0} onChange={(val) => setPredictionValue(val.currentTarget.value, i)} color="white" backgroundColor="gray.900">
+                                                    {d.data.tokens.map((t: string, i: number) => <option value={i} key={i}>{t}</option>)}
+                                                </Select>
+                                            </>
+                                        }
+
+                                        {d.nodeType == "normalizerNode" &&
+                                            <>
+                                                <FormLabel color="white">
+                                                    {d.label}
+                                                </FormLabel>
+                                                <NumberInput max={d.data.max} min={d.data.min} color="white" onChange={(_, numb) => setPredictionValue(normalize(numb, d.data.min, d.data.max).toString(), i)}>
+                                                    <NumberInputField backgroundColor="gray.900" />
+                                                    <NumberInputStepper>
+                                                        <NumberIncrementStepper />
+                                                        <NumberDecrementStepper />
+                                                    </NumberInputStepper>
+                                                </NumberInput>
+                                            </>
+                                        }
+
+                                        {d.nodeType == "onehotNode" &&
+                                        <RadioGroup onChange={(val) => setOneHotValue(d.nodeId, i)} value={d.value}>
+                                            <Radio value="0" hidden={true} ></Radio>
+                                            <Radio value="1" >
+                                                <Text color="white" fontWeight="bold">{d.label}</Text>
+                                            </Radio>
+                                        </RadioGroup>
+                                        }
                                     </FormControl>
                                 </DarkMode>
                             ))}

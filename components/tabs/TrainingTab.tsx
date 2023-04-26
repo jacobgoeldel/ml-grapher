@@ -82,7 +82,6 @@ const TrainingTab: FC<{ visible: boolean }> = ({ visible }) => {
         }
 
         setTrainer((val: any) => trainer);
-        setGraphNet(trainer.net.toJSON());
     }
 
     const startTraining = () => {
@@ -115,6 +114,7 @@ const TrainingTab: FC<{ visible: boolean }> = ({ visible }) => {
             () => {
                 setTrainerInterv(false);
                 setTraining(false);
+                setGraphNet(trainer.net.toJSON());
             }));
 
         setData(data);
@@ -123,6 +123,7 @@ const TrainingTab: FC<{ visible: boolean }> = ({ visible }) => {
         setLossGraph([]);
         setLoss(undefined);
         setTrainer(undefined);
+        setGraphNet(undefined);
     }
 
     const resumeTraining = () => {
