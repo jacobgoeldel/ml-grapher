@@ -172,13 +172,6 @@ const TrainingTab: FC<{ visible: boolean }> = ({ visible }) => {
         setTraining(false);
     }
 
-
-    // if the structure of the graph changes, stop training and invalidate any previous training
-    useEffect(() => {
-        stopTraining();
-        clearTraining();
-    }, [edges]);
-
     // clean up and stop training if we switch tabs
     useEffect(() => {
         if (!visible && training) {

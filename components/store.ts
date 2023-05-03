@@ -273,6 +273,7 @@ const useGraph = create<GraphState>((set, get) => ({
             nodes: get().nodes,
             edges: get().edges,
             graphName: get().graphName,
+            graphNet: get().graphNet,
             dataSets: get().dataSets,
         }
     },
@@ -281,6 +282,7 @@ const useGraph = create<GraphState>((set, get) => ({
             nodes: data.nodes,
             edges: data.edges,
             graphName: data.graphName,
+            graphNet: data.graphNet,
             dataSets: data.dataSets,
         });
 
