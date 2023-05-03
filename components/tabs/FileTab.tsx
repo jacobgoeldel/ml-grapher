@@ -50,7 +50,9 @@ const FileTab: FC<{ visible: boolean }> = ({ visible }) => {
 
     const loadRef = useRef<HTMLInputElement>(null);
 
-    const loadClicked = () => loadRef?.current?.click();
+    const loadClicked = () => {
+        loadRef?.current?.click();
+    }
 
     const loadGraph = (e: any) => {
         const files = e.target.files;
