@@ -1,7 +1,7 @@
 import {
     Alert, AlertIcon, AlertTitle, Box, Button, DarkMode, Flex, LightMode, Modal, ModalBody, ModalCloseButton, ModalContent,
     ModalFooter, ModalHeader, ModalOverlay, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField,
-    NumberInputStepper, Select, Text, VStack, useDisclosure
+    NumberInputStepper, Select, Text, VStack, useDisclosure, useToast
 } from "@chakra-ui/react";
 import { FC, useEffect, useState } from "react";
 import useGraph from "../store";
@@ -10,13 +10,13 @@ import { LineChart, CartesianGrid, XAxis, Legend, Line, Tooltip as GraphTooltip 
 
 const clamp = (val: number, min: number, max: number) => val < min ? min : (val > max ? max : val);
 
-const setIntervalX = (callback: () => void, delay: number, repetitions: number, done: () => void) => {
+const setIntervalX = (callback: () => boolean, delay: number, repetitions: number, done: () => void) => {
     var x = 0;
     var intervalID = window.setInterval(function () {
 
-        callback();
+        const callbackDone = callback();
 
-        if (++x === repetitions) {
+        if (++x === repetitions || callbackDone) {
             window.clearInterval(intervalID);
             done();
         }
@@ -53,10 +53,19 @@ const TrainingTab: FC<{ visible: boolean }> = ({ visible }) => {
 
     const methodChanged = (evt: any) => setMethod(evt.target.value);
 
+    const nanToast = useToast({
+        position: 'bottom-left',
+        title: 'Loss is NaN, Stopping Training!',
+        description: 'NaN Loss typical means either your data values are too large and should be normalized, or learning rate is too high',
+        isClosable: true,
+        status: "error",
+        variant: "left-accent"
+      });
+
     const trainingStep = (data: any, labels: any, trainer: any) => {
 
         if (data == undefined || labels == undefined || trainer == undefined)
-            return;
+            return true;
 
         // loop through data epochs
         let totalLoss = 0;
@@ -71,7 +80,13 @@ const TrainingTab: FC<{ visible: boolean }> = ({ visible }) => {
             }
 
             const stats = trainer.train(x, labels[i]);
-            totalLoss += isNaN(stats.cost_loss) ? 0 : stats.cost_loss;
+
+            if(isNaN(stats.cost_loss)) {
+                nanToast();
+                return true; // exit on nan
+            }
+
+            totalLoss += stats.cost_loss;
         }
 
         const avgloss = totalLoss / data[0].length;
@@ -82,6 +97,7 @@ const TrainingTab: FC<{ visible: boolean }> = ({ visible }) => {
         }
 
         setTrainer((val: any) => trainer);
+        return false;
     }
 
     const startTraining = () => {
