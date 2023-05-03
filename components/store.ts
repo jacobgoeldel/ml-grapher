@@ -260,7 +260,9 @@ const useGraph = create<GraphState>((set, get) => ({
             nodes: [],
             edges: [],
             layerDefs: new Map(),
+            dataSets: new Map(),
             graphName: "",
+            graphNet: undefined,
             errors: [],
         });
 
