@@ -144,7 +144,7 @@ const PredictTab: FC<{ visible: boolean }> = ({ visible }) => {
     return (
         <Box hidden={!visible} h="full">
             <LightMode>
-                <VStack h="full" w="400px" backgroundColor="gray.800" p={8} spacing={12} dropShadow="lg" alignItems="start">
+                <VStack h="full" w="400px" backgroundColor="gray.800" p={8} spacing={12} dropShadow="lg" alignItems="start" overflowY="scroll">
                     <Text fontSize='4xl' color="white" h="min">Predict</Text>
 
                     {canPredict ?
@@ -205,7 +205,7 @@ const PredictTab: FC<{ visible: boolean }> = ({ visible }) => {
                                     </FormControl>
                                 </DarkMode>
                             ))}
-                            <Button colorScheme="green" width="full" onClick={onPredict}>Predict</Button>
+                            <Button colorScheme="green" width="full" minH="10" onClick={onPredict}>Predict</Button>
 
                             {lastPrediction != undefined &&
                                 <Text fontSize='xl' color="white">Prediction: {lastPrediction}</Text>
