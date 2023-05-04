@@ -182,7 +182,7 @@ const TrainingTab: FC<{ visible: boolean }> = ({ visible }) => {
     return (
         <Box hidden={!visible} h="full">
             <LightMode>
-                <VStack h="full" w="500px" backgroundColor="gray.800" p={8} spacing={12} dropShadow="lg" alignItems="start">
+                <VStack h="full" w="500px" backgroundColor="gray.800" p={8} spacing={12} dropShadow="lg" alignItems="start" overflowY="scroll">
                     <Text fontSize='4xl' color="white" h="min">Training</Text>
 
                     <VStack w="full" spacing={4} alignItems="start">
@@ -264,7 +264,7 @@ const TrainingTab: FC<{ visible: boolean }> = ({ visible }) => {
                         {lossGraph.length > 0 &&
                             <Box backgroundColor="gray.900" padding={8} pl={6} rounded="md">
                                 <LineChart
-                                    width={400}
+                                    width={370}
                                     height={200}
                                     data={lossGraph}
                                 >
